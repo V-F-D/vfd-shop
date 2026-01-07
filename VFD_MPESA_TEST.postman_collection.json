@@ -1,0 +1,128 @@
+{
+	"info": {
+		"name": "VFD M-Pesa Test Collection",
+		"description": "Test M-Pesa integration for Victory Fashion Designers shop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get M-Pesa Access Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "SVKiR1yQTkwZ9yBCadTTuwWnGxT73nJXCmfxxwqqjN8xPtJb",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "EYk0O76ZnHoayoge9EGIRKGQtAvUZiG8uHG7mZwd5J5h0QZNs44IOLnTR27CzPhi",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+					"protocol": "https",
+					"host": ["sandbox", "safaricom", "co", "ke"],
+					"path": ["oauth", "v1", "generate"],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. STK Push - Direct to M-Pesa",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate timestamp",
+							"const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);",
+							"pm.environment.set('timestamp', timestamp);",
+							"",
+							"// Generate password",
+							"const shortcode = '174379';",
+							"const passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';",
+							"const password = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(shortcode + passkey + timestamp));",
+							"pm.environment.set('password', password);",
+							"",
+							"console.log('Timestamp:', timestamp);",
+							"console.log('Password:', password);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"BusinessShortCode\": \"174379\",\n    \"Password\": \"{{password}}\",\n    \"Timestamp\": \"{{timestamp}}\",\n    \"TransactionType\": \"CustomerPayBillOnline\",\n    \"Amount\": \"1\",\n    \"PartyA\": \"254706036754\",\n    \"PartyB\": \"174379\",\n    \"PhoneNumber\": \"254706036754\",\n    \"CallBackURL\": \"https://vfd-shop.vercel.app/api/mpesa-callback\",\n    \"AccountReference\": \"VFD-TEST-001\",\n    \"TransactionDesc\": \"Test Payment VFD Shop\"\n}"
+				},
+				"url": {
+					"raw": "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+					"protocol": "https",
+					"host": ["sandbox", "safaricom", "co", "ke"],
+					"path": ["mpesa", "stkpush", "v1", "processrequest"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. STK Push - Through VFD API",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"phoneNumber\": \"254706036754\",\n    \"amount\": 1,\n    \"accountReference\": \"VFD-TEST-001\"\n}"
+				},
+				"url": {
+					"raw": "https://vfd-shop.vercel.app/api/mpesa-stk-push",
+					"protocol": "https",
+					"host": ["vfd-shop", "vercel", "app"],
+					"path": ["api", "mpesa-stk-push"]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "PASTE_TOKEN_HERE"
+		}
+	]
+}

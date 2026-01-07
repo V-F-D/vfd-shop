@@ -1,112 +1,105 @@
-// ==============================================
-// Victory Fashion Designers - M-Pesa STK Push API
-// Vercel Serverless Function
-// ==============================================
+// ==========================================
+// VFD M-Pesa STK Push API - PRODUCTION READY
+// Based on actual Safaricom API structure
+// ==========================================
 
-// Get M-Pesa Access Token
-async function getAccessToken() {
-    const consumerKey = process.env.MPESA_CONSUMER_KEY;
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
-    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-    
-    const response = await fetch(
-        'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
-        {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${auth}`
-            }
-        }
-    );
-    
-    const data = await response.json();
-    return data.access_token;
-}
-
-// Generate Password for STK Push
-function generatePassword() {
-    const shortCode = process.env.MPESA_SHORTCODE;
-    const passkey = process.env.MPESA_PASSKEY;
-    const timestamp = getTimestamp();
-    
-    const password = Buffer.from(shortCode + passkey + timestamp).toString('base64');
-    return password;
-}
-
-// Get Timestamp
-function getTimestamp() {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
-    const hour = ('0' + date.getHours()).slice(-2);
-    const minute = ('0' + date.getMinutes()).slice(-2);
-    const second = ('0' + date.getSeconds()).slice(-2);
-    
-    return `${year}${month}${day}${hour}${minute}${second}`;
-}
-
-// Main Handler
 export default async function handler(req, res) {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
-    
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-    
+    // Only allow POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
-    
+
     try {
         const { phoneNumber, amount, accountReference } = req.body;
-        
+
         // Validation
         if (!phoneNumber || !amount || !accountReference) {
-            return res.status(400).json({ 
-                error: 'Missing required fields',
-                required: ['phoneNumber', 'amount', 'accountReference']
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields: phoneNumber, amount, accountReference'
             });
         }
-        
+
         // Validate phone number format
-        const phoneRegex = /^254[0-9]{9}$/;
-        if (!phoneRegex.test(phoneNumber)) {
-            return res.status(400).json({ 
+        const cleanPhone = phoneNumber.replace(/\s+/g, '');
+        if (!/^254\d{9}$/.test(cleanPhone)) {
+            return res.status(400).json({
+                success: false,
                 error: 'Invalid phone number format. Use 254XXXXXXXXX'
             });
         }
+
+        console.log('=== M-Pesa STK Push Request ===');
+        console.log('Phone:', cleanPhone);
+        console.log('Amount:', amount);
+        console.log('Reference:', accountReference);
+
+        // Get M-Pesa credentials from environment
+        const consumerKey = process.env.MPESA_CONSUMER_KEY;
+        const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
+        const shortcode = process.env.MPESA_SHORTCODE || '174379';
+        const passkey = process.env.MPESA_PASSKEY;
+        const callbackUrl = process.env.MPESA_CALLBACK_URL;
+
+        if (!consumerKey || !consumerSecret || !passkey || !callbackUrl) {
+            console.error('Missing M-Pesa credentials in environment variables');
+            return res.status(500).json({
+                success: false,
+                error: 'Server configuration error'
+            });
+        }
+
+        // Step 1: Get Access Token
+        const authString = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
         
-        // Get access token
-        const accessToken = await getAccessToken();
-        
-        // Prepare STK Push request
-        const timestamp = getTimestamp();
-        const password = generatePassword();
-        
+        const tokenResponse = await fetch(
+            'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${authString}`
+                }
+            }
+        );
+
+        if (!tokenResponse.ok) {
+            const errorText = await tokenResponse.text();
+            console.error('Token generation failed:', errorText);
+            return res.status(500).json({
+                success: false,
+                error: 'Failed to authenticate with M-Pesa'
+            });
+        }
+
+        const tokenData = await tokenResponse.json();
+        const accessToken = tokenData.access_token;
+
+        console.log('Access token obtained');
+
+        // Step 2: Generate timestamp and password
+        const timestamp = new Date().toISOString()
+            .replace(/[^0-9]/g, '')
+            .slice(0, 14); // YYYYMMDDHHmmss
+
+        const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString('base64');
+
+        // Step 3: Make STK Push request
         const stkPushData = {
-            BusinessShortCode: process.env.MPESA_SHORTCODE,
+            BusinessShortCode: shortcode,
             Password: password,
             Timestamp: timestamp,
-            TransactionType: "CustomerPayBillOnline",
-            Amount: Math.ceil(amount), // Ensure whole number
-            PartyA: phoneNumber,
-            PartyB: process.env.MPESA_SHORTCODE,
-            PhoneNumber: phoneNumber,
-            CallBackURL: process.env.MPESA_CALLBACK_URL,
+            TransactionType: 'CustomerPayBillOnline',
+            Amount: Math.ceil(amount), // Ensure integer
+            PartyA: cleanPhone,
+            PartyB: shortcode,
+            PhoneNumber: cleanPhone,
+            CallBackURL: callbackUrl,
             AccountReference: accountReference,
-            TransactionDesc: `VFD Order ${accountReference}`
+            TransactionDesc: `Payment for ${accountReference}`
         };
-        
-        // Initiate STK Push
+
+        console.log('Sending STK Push...');
+
         const stkResponse = await fetch(
             'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
             {
@@ -118,35 +111,42 @@ export default async function handler(req, res) {
                 body: JSON.stringify(stkPushData)
             }
         );
-        
+
         const stkData = await stkResponse.json();
-        
-        // Log the transaction (you can save to Supabase here)
-        console.log('M-Pesa STK Push initiated:', {
-            phone: phoneNumber,
-            amount: amount,
-            reference: accountReference,
-            checkoutRequestID: stkData.CheckoutRequestID
-        });
-        
-        // Return response
-        return res.status(200).json({
-            success: true,
-            message: 'STK Push sent successfully',
-            data: {
-                MerchantRequestID: stkData.MerchantRequestID,
-                CheckoutRequestID: stkData.CheckoutRequestID,
-                ResponseCode: stkData.ResponseCode,
-                ResponseDescription: stkData.ResponseDescription,
-                CustomerMessage: stkData.CustomerMessage
-            }
-        });
-        
+
+        console.log('M-Pesa Response:', stkData);
+
+        // Check response
+        if (stkData.ResponseCode === '0') {
+            // Success!
+            return res.status(200).json({
+                success: true,
+                message: 'STK Push sent successfully',
+                data: {
+                    MerchantRequestID: stkData.MerchantRequestID,
+                    CheckoutRequestID: stkData.CheckoutRequestID,
+                    ResponseCode: stkData.ResponseCode,
+                    ResponseDescription: stkData.ResponseDescription,
+                    CustomerMessage: stkData.CustomerMessage
+                }
+            });
+        } else {
+            // M-Pesa returned an error
+            console.error('M-Pesa Error:', stkData);
+            return res.status(400).json({
+                success: false,
+                error: stkData.errorMessage || stkData.ResponseDescription || 'Payment request failed',
+                data: stkData
+            });
+        }
+
     } catch (error) {
-        console.error('STK Push error:', error);
-        return res.status(500).json({ 
-            error: 'Failed to initiate payment',
-            message: error.message 
+        console.error('=== STK Push Error ===');
+        console.error(error);
+        
+        return res.status(500).json({
+            success: false,
+            error: error.message || 'Internal server error'
         });
     }
 }
