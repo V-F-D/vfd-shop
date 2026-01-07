@@ -3,9 +3,11 @@
 // Interactive Features & Enhancements  
 // ==========================================
 
-// Initialize EmailJS
+// Initialize EmailJS (only if library is loaded)
 (function() {
-  emailjs.init("1Yy9BmUn8aid2j5Rs");
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init("1Yy9BmUn8aid2j5Rs");
+  }
 })();
 
 // DOM Content Loaded
