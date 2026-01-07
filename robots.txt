@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Sitemap: https://v-f-d.github.io/sitemap.xml
+
+# Disallow admin and system files
+Disallow: /admin/
+Disallow: /cgi-bin/
+Disallow: /includes/
+Disallow: /temp/
+
+# Allow all other files
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
