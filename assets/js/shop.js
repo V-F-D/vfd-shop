@@ -462,7 +462,6 @@ async function handleCheckout(e) {
     // Get form data
     const customerName = document.getElementById('customerName').value;
     const customerPhone = document.getElementById('customerPhone').value;
-    const customerEmail = document.getElementById('customerEmail').value;
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     
     // Calculate totals
@@ -487,7 +486,6 @@ async function handleCheckout(e) {
             customer: {
                 name: customerName,
                 phone: customerPhone,
-                email: customerEmail,
                 address: deliveryAddress
             },
             items: cart,
