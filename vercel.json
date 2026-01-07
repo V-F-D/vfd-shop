@@ -1,18 +1,9 @@
 {
   "version": 2,
-  "name": "victory-fashion-designers",
   "builds": [
     {
       "src": "api/**/*.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "**/*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "assets/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -21,29 +12,20 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot))",
-      "dest": "/$1"
+      "src": "/shop",
+      "dest": "/shop.html"
+    },
+    {
+      "src": "/gallery",
+      "dest": "/gallery.html"
+    },
+    {
+      "src": "/course_outline",
+      "dest": "/course_outline.html"
     },
     {
       "src": "/",
       "dest": "/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1.html"
     }
-  ],
-  "env": {
-    "MPESA_CONSUMER_KEY": "@mpesa_consumer_key",
-    "MPESA_CONSUMER_SECRET": "@mpesa_consumer_secret",
-    "MPESA_SHORTCODE": "@mpesa_shortcode",
-    "MPESA_PASSKEY": "@mpesa_passkey",
-    "MPESA_CALLBACK_URL": "@mpesa_callback_url",
-    "SUPABASE_URL": "@supabase_url",
-    "SUPABASE_KEY": "@supabase_key"
-  },
-  "regions": ["iad1"],
-  "github": {
-    "silent": true
-  }
+  ]
 }
