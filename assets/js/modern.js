@@ -420,7 +420,7 @@ document.querySelectorAll('.gallery-item').forEach(item => {
 document.querySelectorAll('.service-card').forEach(card => {
   card.addEventListener('mousemove', (e) => {
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect. - rect.width / 2;
+    const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
     
     const tiltX = (y / rect.height) * 10;
