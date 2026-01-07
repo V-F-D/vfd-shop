@@ -1,0 +1,39 @@
+# Victory Fashion Designers - .gitignore
+
+# Environment Variables (NEVER commit these!)
+.env
+.env.local
+.env.production
+.env.development
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Temporary files
+tmp/
+temp/

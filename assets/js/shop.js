@@ -4,77 +4,198 @@
 
 // Sample Products Database (will be Supabase later)
 const products = [
+    // Dresses
     {
         id: 1,
-        name: "Elegant Evening Dress",
+        name: "Floral Maxi Dress",
         category: "dresses",
-        price: 5500,
+        price: 2800,
         image: "assets/images/A.webp",
         badge: "New",
-        description: "Stunning evening dress with modern cut"
+        description: "Beautiful floral print maxi dress"
     },
     {
         id: 2,
-        name: "African Print Maxi",
-        category: "african",
-        price: 4200,
+        name: "African Print Dress",
+        category: "dresses",
+        price: 3200,
         image: "assets/images/B.webp",
-        badge: null,
-        description: "Beautiful African print maxi dress"
+        badge: "Popular",
+        description: "Vibrant African print dress"
     },
     {
         id: 3,
-        name: "Custom Tailored Suit",
-        category: "suits",
-        price: 12000,
+        name: "Cocktail Dress",
+        category: "dresses",
+        price: 3500,
         image: "assets/images/C.webp",
-        badge: "Popular",
-        description: "Premium tailored suit for men"
+        badge: null,
+        description: "Perfect for evenings out"
     },
+    
+    // Tops
     {
         id: 4,
-        name: "Ankara Dress",
-        category: "african",
-        price: 3800,
+        name: "Casual Blouse",
+        category: "tops",
+        price: 1200,
         image: "assets/images/D.webp",
         badge: null,
-        description: "Vibrant Ankara print dress"
+        description: "Comfortable casual top"
     },
     {
         id: 5,
-        name: "Cocktail Dress",
-        category: "dresses",
-        price: 4500,
+        name: "Designer Top",
+        category: "tops",
+        price: 1500,
         image: "assets/images/E.webp",
-        badge: null,
-        description: "Perfect for special occasions"
+        badge: "Sale",
+        description: "Stylish designer top"
     },
+    
+    // Two Pieces
     {
         id: 6,
-        name: "Men's Blazer",
-        category: "suits",
-        price: 8500,
+        name: "Co-ord Set",
+        category: "two-pieces",
+        price: 3800,
         image: "assets/images/F.webp",
-        badge: null,
-        description: "Professional blazer"
+        badge: "New",
+        description: "Matching top and bottom set"
     },
     {
         id: 7,
-        name: "Fashion Scarf",
-        category: "accessories",
-        price: 1200,
+        name: "Ankara Two Piece",
+        category: "two-pieces",
+        price: 4200,
         image: "assets/images/G.webp",
-        badge: "Sale",
-        description: "Silk fashion scarf"
+        badge: null,
+        description: "African print two piece"
     },
+    
+    // Skirts
     {
         id: 8,
-        name: "Designer Handbag",
-        category: "accessories",
-        price: 3500,
+        name: "A-Line Skirt",
+        category: "skirts",
+        price: 1800,
         image: "assets/images/H.webp",
         badge: null,
-        description: "Leather handbag"
+        description: "Classic A-line skirt"
+    },
+    {
+        id: 9,
+        name: "Pencil Skirt",
+        category: "skirts",
+        price: 2000,
+        image: "assets/images/A.webp",
+        badge: null,
+        description: "Professional pencil skirt"
+    },
+    
+    // Sandals
+    {
+        id: 10,
+        name: "Summer Sandals",
+        category: "sandals",
+        price: 1500,
+        image: "assets/images/B.webp",
+        badge: null,
+        description: "Comfortable summer sandals"
+    },
+    {
+        id: 11,
+        name: "Designer Sandals",
+        category: "sandals",
+        price: 2200,
+        image: "assets/images/C.webp",
+        badge: "New",
+        description: "Elegant designer sandals"
+    },
+    
+    // Underwear & Intimates
+    {
+        id: 12,
+        name: "Cotton Panties (3-pack)",
+        category: "underwear",
+        price: 800,
+        image: "assets/images/D.webp",
+        badge: null,
+        description: "Comfortable cotton panties"
+    },
+    {
+        id: 13,
+        name: "Lace Bra",
+        category: "underwear",
+        price: 1200,
+        image: "assets/images/E.webp",
+        badge: null,
+        description: "Supportive lace bra"
+    },
+    {
+        id: 14,
+        name: "Men's Boxers (2-pack)",
+        category: "underwear",
+        price: 900,
+        image: "assets/images/F.webp",
+        badge: null,
+        description: "Comfortable boxer shorts"
+    },
+    {
+        id: 15,
+        name: "Cotton Vest",
+        category: "underwear",
+        price: 600,
+        image: "assets/images/G.webp",
+        badge: null,
+        description: "Basic cotton vest"
+    },
+    {
+        id: 16,
+        name: "Socks (5-pack)",
+        category: "underwear",
+        price: 500,
+        image: "assets/images/H.webp",
+        badge: "Sale",
+        description: "Assorted color socks"
+    },
+    
+    // Accessories
+    {
+        id: 17,
+        name: "Leather Handbag",
+        category: "accessories",
+        price: 3500,
+        image: "assets/images/A.webp",
+        badge: "Popular",
+        description: "Premium leather handbag"
+    },
+    {
+        id: 18,
+        name: "Crossbody Bag",
+        category: "accessories",
+        price: 2200,
+        image: "assets/images/B.webp",
+        badge: null,
+        description: "Stylish crossbody bag"
+    },
+    {
+        id: 19,
+        name: "Evening Clutch",
+        category: "accessories",
+        price: 1800,
+        image: "assets/images/C.webp",
+        badge: null,
+        description: "Elegant evening clutch"
+    },
+    {
+        id: 20,
+        name: "Tote Bag",
+        category: "accessories",
+        price: 2500,
+        image: "assets/images/D.webp",
+        badge: "New",
+        description: "Spacious tote bag"
     }
 ];
 
