@@ -313,6 +313,19 @@ function openCheckoutModal() {
     const grandTotal = total + deliveryFee;
     
     summary.innerHTML = `
+        <div style="background: #f0f9ff; border: 1px solid #3b82f6; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: start; gap: 0.75rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="flex-shrink: 0; margin-top: 0.125rem;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <div style="font-size: 0.875rem; color: #1e40af;">
+                    <strong style="display: block; margin-bottom: 0.25rem;">M-Pesa Integration Coming Soon</strong>
+                    <span>Online payment is currently under development. For now, please contact us on <strong>+254 723 056 432</strong> to complete your order.</span>
+                </div>
+            </div>
+        </div>
         ${cart.map(item => `
             <div class="summary-row">
                 <span>${item.name} × ${item.quantity}</span>
@@ -386,13 +399,13 @@ async function handleCheckout(e) {
         });
         localStorage.setItem('vfd_orders', JSON.stringify(orders));
         
-        // Simulate M-Pesa STK Push
-        showNotification('📱 Check your phone for M-Pesa prompt...', 'info');
+        // Show development notice
+        showNotification('ℹ️ M-Pesa payment is coming soon! We\'ll contact you to complete your order.', 'info');
         
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Success simulation
-        showNotification('✅ Payment successful! Order confirmed.', 'success');
+        // Order received message
+        showNotification('✅ Order received! We\'ll contact you shortly to confirm.', 'success');
         
         // Clear cart
         cart = [];

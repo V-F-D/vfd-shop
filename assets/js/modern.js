@@ -465,7 +465,7 @@ if ('IntersectionObserver' in window) {
 // Console message for developers
 console.log('%c👋 Hello Developer!', 'font-size: 20px; font-weight: bold; color: #667eea;');
 console.log('%cVictory Fashion Designers & Training', 'font-size: 14px; color: #6b7280;');
-console.log('%cWebsite developed by ToniDev', 'font-size: 12px; color: #9ca3af;');
+console.log('%cWebsite developed by Kamaa', 'font-size: 12px; color: #9ca3af;');
 console.log('%cInterested in collaboration? WhatsApp: +254 706 036 754', 'font-size: 12px; color: #10b981;');
 
 // Performance monitoring
