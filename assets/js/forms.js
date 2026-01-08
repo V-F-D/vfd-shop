@@ -38,15 +38,19 @@ if (contactForm) {
             
             console.log('Submitting contact form:', formData);
             
-            // Insert into Supabase
-            const { data, error } = await supabase
-                .from('contact_messages')
-                .insert([formData]);
-            
-            if (error) {
-                console.error('Supabase error:', error);
-                alert('⚠️ ERROR: ' + error.message + '\n\nCode: ' + (error.code || 'N/A') + '\nHint: RLS Policy likely blocking insert.');
-                throw error;
+            // Send to Serverless Function (Secure)
+            const response = await fetch('/api/submit-contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error('API Error:', result);
+                alert('⚠️ SUBMISSION FAILED!\n\nReason: ' + (result.details || result.error || 'Unknown error'));
+                throw new Error(result.error);
             }
             
             // Success!
@@ -66,14 +70,11 @@ if (contactForm) {
             
         } catch (error) {
             console.error('Contact form error:', error);
-            submitBtn.querySelector('span').textContent = '❌ Error - Try Again';
+            // Error alert already handled above or propagated
+            
+            // Reset button
             submitBtn.disabled = false;
-            
-            showNotification('Error sending message. Please try WhatsApp or call us.', 'error');
-            
-            setTimeout(() => {
-                submitBtn.querySelector('span').textContent = originalText;
-            }, 3000);
+            submitBtn.querySelector('span').textContent = originalText;
         }
     });
 }
@@ -117,12 +118,20 @@ if (enrollmentForm) {
                 status: 'pending'
             };
             
-            // Insert into Supabase
-            const { data, error } = await supabase
-                .from('enrollments')
-                .insert([formData]);
-            
-            if (error) throw error;
+            // Send to Serverless Function (Secure)
+            const response = await fetch('/api/submit-enrollment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error('API Error:', result);
+                alert('⚠️ ENROLLMENT FAILED!\n\nReason: ' + (result.details || result.error || 'Unknown error'));
+                throw new Error(result.error);
+            }
             
             // Success!
             submitBtn.textContent = '✓ Enrolled Successfully!';
@@ -140,16 +149,14 @@ if (enrollmentForm) {
             }, 3000);
             
         } catch (error) {
-            console.error('Enrollment form error:', error);
-            submitBtn.textContent = '❌ Error - Try Again';
+            console.error('Enrollment error:', error);
+            // Error alert handled above
+            showNotification('Error submitting application. Please try again.', 'error');
+            
             submitBtn.disabled = false;
-            
-            showNotification('Error submitting enrollment. Please call us.', 'error');
-            
-            setTimeout(() => {
-                submitBtn.textContent = originalText;
-            }, 3000);
+            submitBtn.textContent = originalText;
         }
+
     });
 }
 
