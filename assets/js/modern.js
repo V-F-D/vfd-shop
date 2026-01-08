@@ -194,10 +194,17 @@ function initFAQ() {
 }
 
 // ==========================================
-// Contact Form
+// Contact Form - NOW HANDLED BY forms.js (Supabase)
 // ==========================================
 
 function initContactForm() {
+  // DISABLED - Now using forms.js with Supabase instead of EmailJS
+  // The contact form submission is handled in assets/js/forms.js
+  // This prevents conflicts between EmailJS and Supabase
+  
+  console.log('Contact form will be handled by forms.js (Supabase)');
+  
+  /* OLD EMAILJS CODE - DISABLED
   const form = document.getElementById('contactForm');
   
   if (form) {
@@ -237,7 +244,7 @@ function initContactForm() {
         });
         
         // Show success message
-        showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
+        showNotification('Message sent successfully! We\\'ll get back to you soon.', 'success');
         form.reset();
         
       } catch (error) {
@@ -250,6 +257,7 @@ function initContactForm() {
       }
     });
   }
+  */
 }
 
 // ==========================================
