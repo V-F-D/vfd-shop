@@ -619,69 +619,251 @@ tr:last-child td {
     display: block;
 }
 
-/* Responsive */
+/* ==========================================
+   MOBILE RESPONSIVE - ENHANCED UX
+   ========================================== */
+
+/* Tablet & Small Screens (768px - 1024px) */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .page-content {
+        padding: var(--space-lg);
+    }
+}
+
+/* Mobile (max-width: 768px) - FULL RESPONSIVE REDESIGN */
 @media (max-width: 768px) {
+    /* Mobile Menu Button */
     .mobile-menu-btn {
         display: flex;
     }
     
+    /* Sidebar - Hidden by default, overlay when open */
     .sidebar {
         transform: translateX(-100%);
+        width: 280px;
     }
     
     .sidebar.active {
         transform: translateX(0);
-        box-shadow: var(--shadow-xl);
+        box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
     }
     
+    /* Main content takes full width */
     .main-content {
         margin-left: 0;
+        width: 100%;
     }
     
+    /* Header - Adjusted for mobile menu button */
     .top-header {
-        padding-left: 4rem;
+        padding: 1rem;
+        padding-left: 4.5rem;
+        padding-right: 1rem;
     }
     
     .header-left h1 {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
+        font-weight: 700;
     }
     
     .header-subtitle {
-        display: none;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
+        font-size: 0.75rem;
     }
     
     .header-search {
         display: none;
     }
     
+    /* Page Content - Optimized spacing */
     .page-content {
-        padding: var(--space-lg);
+        padding: 1rem;
+    }
+    
+    /* Stats Grid - Single column on mobile */
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Stat Cards - Compact but readable */
+    .stat-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+    }
+    
+    .stat-label {
+        font-size: 0.813rem;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stat-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Cards - Compact padding */
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+    }
+    
+    /* Tables - Responsive with horizontal scroll */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     table {
-        font-size: 0.875rem;
+        font-size: 0.813rem;
+        min-width: 600px; /* Prevent table from being too cramped */
     }
     
     th, td {
-        padding: var(--space-sm) var(--space-md);
+        padding: 0.625rem 0.75rem;
+        white-space: nowrap;
     }
     
-    .card {
-        padding: var(--space-md);
+    th {
+        font-size: 0.688rem;
     }
     
-    /* Simplify for 50-year-old - bigger text and buttons */
+    /* Buttons - Larger touch targets */
     .btn {
-        font-size: 1rem;
-        padding: 0.75rem 1.25rem;
+        font-size: 0.938rem;
+        padding: 0.75rem 1rem;
+        min-height: 44px; /* iOS recommended touch target */
     }
     
+    .btn-sm {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Form Controls - Better mobile experience */
     .form-control {
+        font-size: 1rem; /* Prevents iOS zoom */
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+    }
+    
+    /* Icon Buttons - Larger touch area */
+    .icon-btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    /* Header Actions - Adjusted spacing */
+    .header-actions {
+        gap: 0.5rem;
+    }
+    
+    /* Badge sizing */
+    .badge {
+        font-size: 0.688rem;
+        padding: 0.25rem 0.625rem;
+    }
+    
+    /* Nav section titles - smaller */
+    .nav-section-title {
+        font-size: 0.688rem;
+    }
+}
+
+/* Small Mobile (max-width: 480px) - ULTRA COMPACT */
+@media (max-width: 480px) {
+    /* Header - Even more compact */
+    .top-header {
+        padding: 0.75rem;
+        padding-left: 4rem;
+    }
+    
+    .header-left h1 {
         font-size: 1rem;
+    }
+    
+    .header-subtitle {
+        display: none; /* Hide on very small screens */
+    }
+    
+    .header-actions {
+        gap: 0.375rem;
+    }
+    
+    /* Page content - minimal padding */
+    .page-content {
+        padding: 0.75rem;
+    }
+    
+    /* Stat cards - more compact */
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    /* Cards - minimal padding */
+    .card {
+        padding: 0.875rem;
+        border-radius: 0.75rem;
+    }
+    
+    .card-title {
+        font-size: 0.938rem;
+    }
+    
+    /* Stats grid - tighter gap */
+    .stats-grid {
+        gap: 0.75rem;
+    }
+    
+    /* Tables - even more compact */
+    th, td {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Landscape Mobile - Optimize for horizontal space */
+@media (max-height: 600px) and (orientation: landscape) {
+    .page-content {
+        padding: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stat-card {
+        padding: 1rem;
     }
 }
 
@@ -699,4 +881,16 @@ tr:last-child td {
 
 .fade-in {
     animation: fadeIn 0.3s ease-out;
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: rgba(99, 102, 241, 0.1);
+    }
+    
+    html {
+        -webkit-text-size-adjust: 100%;
+       text-size-adjust: 100%;
+    }
 }
