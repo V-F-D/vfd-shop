@@ -155,6 +155,9 @@ function initScrollEffects() {
 
   // Parallax effect for hero section
   window.addEventListener('scroll', () => {
+    // Disable parallax on mobile to prevent lag and content overlap
+    if (window.innerWidth < 768) return;
+
     const scrolled = window.pageYOffset;
     const heroContent = document.querySelector('.hero-content');
     

@@ -1401,7 +1401,8 @@ img {
   }
 
   .hero {
-    padding: 6rem var(--space-sm) 3rem;
+    padding: 5rem 1rem 2rem;
+    min-height: auto;
   }
 
   .stat-divider {
@@ -1410,6 +1411,7 @@ img {
 
   .hero-stats {
     gap: var(--space-md);
+    padding-top: 1.5rem;
   }
 
   .hero-scroll {
