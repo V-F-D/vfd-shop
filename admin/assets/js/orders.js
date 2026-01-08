@@ -39,54 +39,63 @@ async function loadOrders() {
     }
 }
 
-// Render orders table
+// Render orders grid
 function renderOrders() {
-    const tbody = document.getElementById('orders-tbody');
+    const grid = document.getElementById('orders-grid');
     
     if (!filteredOrders || filteredOrders.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                    <div>No orders found</div>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">Orders will appear here once customers make purchases on the shop</p>
-                </td>
-            </tr>
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-secondary);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                <div>No orders found</div>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">Orders will appear here once customers make purchases on the shop</p>
+            </div>
         `;
         return;
     }
 
-    tbody.innerHTML = filteredOrders.map(order => {
+    grid.innerHTML = filteredOrders.map(order => {
         const itemCount = order.order_items?.length || 0;
         const statusBadge = getStatusBadgeClass(order.status);
         const paymentBadge = getPaymentBadgeClass(order.payment_status);
         
         return `
-            <tr style="cursor: pointer;" onclick="viewOrderDetails('${order.id}')">
-                <td><strong>#${order.order_number}</strong></td>
-                <td>${formatDate(order.created_at)}</td>
-                <td>${order.customer_name}</td>
-                <td>${order.customer_phone}</td>
-                <td>${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
-                <td><strong>KSh ${parseFloat(order.total).toLocaleString()}</strong></td>
-                <td><span class="badge ${paymentBadge}">${order.payment_status}</span></td>
-                <td><span class="badge ${statusBadge}">${order.status}</span></td>
-                <td onclick="event.stopPropagation();">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button onclick="viewOrderDetails('${order.id}')" class="btn btn-sm btn-primary" title="View Details">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </button>
-                        <button onclick="whatsappCustomer('${order.customer_phone}', '${order.order_number}')" class="btn btn-sm btn-success" title="WhatsApp Customer">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path>
-                            </svg>
-                        </button>
+            <div class="message-card order-card fade-in" onclick="viewOrderDetails('${order.id}')" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                <div class="message-header">
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">#${order.order_number}</h3>
+                        <p style="font-size: 0.8rem;">${formatDate(order.created_at)}</p>
                     </div>
-                </td>
-            </tr>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <span class="badge ${statusBadge}">${order.status}</span>
+                        <span class="badge ${paymentBadge}" style="font-size: 0.7rem; padding: 2px 6px; opacity: 0.9;">${order.payment_status}</span>
+                    </div>
+                </div>
+                
+                <div class="message-body" style="background: transparent; padding: 0.5rem 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">${order.customer_name.charAt(0).toUpperCase()}</div>
+                            <span style="font-weight: 500;">${order.customer_name}</span>
+                        </div>
+                        <span style="font-weight: 700; font-size: 1.1rem;">KSh ${parseFloat(order.total).toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); border-top: 1px dashed var(--border-color); padding-top: 0.5rem;">
+                        <span>${itemCount} Item${itemCount !== 1 ? 's' : ''}</span>
+                        <span>View Details &rarr;</span>
+                    </div>
+                </div>
+
+                <div class="message-actions" onclick="event.stopPropagation();">
+                     <button onclick="viewOrderDetails('${order.id}')" class="btn btn-sm btn-outline-primary" style="flex: 1;">
+                        View
+                    </button>
+                    <button onclick="whatsappCustomer('${order.customer_phone}', '${order.order_number}')" class="btn btn-sm btn-success" style="flex: 1;">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+                        WhatsApp
+                    </button>
+                </div>
+            </div>
         `;
     }).join('');
 }
@@ -408,27 +417,23 @@ function updatePendingBadge() {
 }
 
 function showLoadingState() {
-    const tbody = document.getElementById('orders-tbody');
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
-                <div>Loading orders...</div>
-            </td>
-        </tr>
+    const grid = document.getElementById('orders-grid');
+    grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+            <div>Loading orders...</div>
+        </div>
     `;
 }
 
 function showErrorState(message) {
-    const tbody = document.getElementById('orders-tbody');
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--danger);">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
-                <div>Error loading orders</div>
-                <p style="font-size: 0.875rem; margin-top: 0.5rem;">${message}</p>
-                <button onclick="loadOrders()" class="btn btn-primary" style="margin-top: 1rem;">Try Again</button>
-            </td>
-        </tr>
+    const grid = document.getElementById('orders-grid');
+    grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--danger);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+            <div>Error loading orders</div>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem;">${message}</p>
+            <button onclick="loadOrders()" class="btn btn-primary" style="margin-top: 1rem;">Try Again</button>
+        </div>
     `;
 }

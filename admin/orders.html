@@ -200,30 +200,11 @@
                         </div>
                     </div>
 
-                    <div class="table-container">
-                        <table id="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>Order #</th>
-                                    <th>Date</th>
-                                    <th>Customer</th>
-                                    <th>Phone</th>
-                                    <th>Items</th>
-                                    <th>Total</th>
-                                    <th>Payment</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-tbody">
-                                <tr>
-                                    <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-                                        <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
-                                        <div>Loading orders...</div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div id="orders-grid" class="message-grid">
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-secondary);">
+                            <div style="font-size: 2rem;">⏳</div>
+                            <div>Loading orders...</div>
+                        </div>
                     </div>
                 </div>
             </div>

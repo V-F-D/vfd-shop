@@ -1301,6 +1301,11 @@ tr:last-child td {
         overflow-y: auto;
     }
 
+    /* Single Col Grids */
+    .message-grid {
+        grid-template-columns: 1fr !important;
+    }
+
     /* Ensure Top Products card doesn't overflow */
     #top-products-list {
         overflow-x: hidden; /* Prevent horizontal scroll causing page expand */
