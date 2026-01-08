@@ -197,9 +197,14 @@ async function saveProduct(event) {
 
     try {
         const submitBtn = event.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.querySelector('span').textContent;
+        const buttonSpan = submitBtn.querySelector('span');
+        const originalText = buttonSpan ? buttonSpan.textContent : submitBtn.textContent;
         submitBtn.disabled = true;
-        submitBtn.querySelector('span').textContent = 'Saving...';
+        if (buttonSpan) {
+            buttonSpan.textContent = 'Saving...';
+        } else {
+            submitBtn.textContent = 'Saving...';
+        }
 
         let imageUrl = null;
         
@@ -212,7 +217,7 @@ async function saveProduct(event) {
             const filePath = `products/${fileName}`;
             
             // Upload to Supabase Storage
-            const { data: uploadData, error: uploadError } = await supabaseClient
+            const { data: uploadData, error: uploadError} = await supabaseClient
                 .storage
                 .from('product-images')
                 .upload(filePath, file, {
@@ -283,8 +288,15 @@ async function saveProduct(event) {
         console.error('Save product error:', error);
         showNotification('Error saving product: ' + error.message, 'error');
         const submitBtn = event.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.querySelector('span').textContent = 'Save Product';
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            const buttonSpan = submitBtn.querySelector('span');
+            if (buttonSpan) {
+                buttonSpan.textContent = 'Save Product';
+            } else {
+                submitBtn.textContent = 'Save Product';
+            }
+        }
     }
 }
 
