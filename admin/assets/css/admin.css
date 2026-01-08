@@ -1197,3 +1197,40 @@ tr:last-child td {
         scroll-behavior: smooth;
     }
 }
+/* Dashboard Charts Grid */
+.dashboard-charts-grid {
+    display: grid; 
+    grid-template-columns: 2fr 1fr; 
+    gap: var(--space-xl); 
+    margin-bottom: var(--space-xl);
+}
+
+/* ==========================================
+   MOBILE OVERRIDES (Ensure these are last)
+   ========================================== */
+@media (max-width: 768px) {
+    /* Stack charts on mobile */
+    .dashboard-charts-grid {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-lg) !important;
+    }
+
+    /* Fix Notification Dropdown on Mobile */
+    .notification-dropdown {
+        position: fixed !important;
+        top: 70px !important;
+        right: 1rem !important;
+        left: 1rem !important; /* Full width minus padding */
+        width: auto !important;
+        max-width: 400px;
+        margin-left: auto;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    /* Ensure Top Products card doesn't overflow */
+    #top-products-list {
+        overflow-x: hidden; /* Prevent horizontal scroll causing page expand */
+        width: 100%;
+    }
+}
