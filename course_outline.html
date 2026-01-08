@@ -821,50 +821,43 @@
             `;
             
             try {
-                // Collect form data
+                // Collect form data with correct field names for Supabase
                 const formData = {
-                    // Personal Information
-                    fullName: document.getElementById('fullName').value,
-                    dateOfBirth: document.getElementById('dateOfBirth').value,
+                    full_name: document.getElementById('fullName').value.trim(),
+                    date_of_birth: document.getElementById('dateOfBirth').value,
                     gender: document.getElementById('gender').value,
-                    idNumber: document.getElementById('idNumber').value,
-                    
-                    // Contact Information
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    address: document.getElementById('address').value,
-                    city: document.getElementById('city').value,
-                    county: document.getElementById('county').value,
-                    
-                    // Educational Background
-                    educationLevel: document.getElementById('educationLevel').value,
-                    hasExperience: document.getElementById('hasExperience').value,
-                    
-                    // Emergency Contact
-                    emergencyName: document.getElementById('emergencyName').value,
-                    emergencyRelationship: document.getElementById('emergencyRelationship').value,
-                    emergencyPhone: document.getElementById('emergencyPhone').value,
-                    
-                    // Course Selection
-                    intakeMonth: document.getElementById('intakeMonth').value,
-                    studyMode: document.getElementById('studyMode').value,
-                    additionalInfo: document.getElementById('additionalInfo').value,
-                    
-                    // Metadata
-                    submittedAt: new Date().toISOString(),
+                    id_number: document.getElementById('idNumber').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    city: document.getElementById('city').value.trim(),
+                    county: document.getElementById('county').value.trim(),
+                    education_level: document.getElementById('educationLevel').value,
+                    has_experience: document.getElementById('hasExperience').value,
+                    emergency_name: document.getElementById('emergencyName').value.trim(),
+                    emergency_relationship: document.getElementById('emergencyRelationship').value.trim(),
+                    emergency_phone: document.getElementById('emergencyPhone').value.trim(),
+                    intake_month: document.getElementById('intakeMonth').value,
+                    study_mode: document.getElementById('studyMode').value,
+                    additional_info: document.getElementById('additionalInfo').value.trim() || '',
                     status: 'pending'
                 };
                 
-                // TODO: Replace with Supabase insert
-                // const { data, error } = await supabase
-                //     .from('enrollments')
-                //     .insert([formData]);
+                console.log('Submitting enrollment:', formData);
                 
-                // For now, log to console and save to localStorage
-                console.log('Enrollment Data:', formData);
-                const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-                enrollments.push(formData);
-                localStorage.setItem('enrollments', JSON.stringify(enrollments));
+                // Submit to API endpoint (which saves to Supabase)
+                const response = await fetch('/api/submit-enrollment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    console.error('API Error:', result);
+                    throw new Error(result.details || result.error || 'Submission failed');
+                }
                 
                 // Show success message
                 if (window.VFD && window.VFD.showNotification) {
