@@ -49,15 +49,22 @@ async function loadDashboardStats() {
         document.getElementById('pending-orders').textContent = pendingCount || 0;
         document.getElementById('pending-orders-badge').textContent = pendingCount || 0;
 
-        // Total customers
-        const { count: customersCount } = await supabaseClient
+        // Total customers (distinct phone numbers)
+        const { data: allOrders } = await supabaseClient
             .from('orders')
-            .select('customer_phone', { count: 'exact', head: true });
+            .select('customer_phone');
         
-        document.getElementById('total-customers').textContent = customersCount || 0;
+        const uniqueCustomers = new Set(allOrders?.map(o => o.customer_phone) || []);
+        document.getElementById('total-customers').textContent = uniqueCustomers.size;
 
-        // Low stock items (would need products table)
-        document.getElementById('low-stock').textContent = '0';
+        // Low stock items (from products table)
+        const { count: lowStockCount } = await supabaseClient
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .lt('stock_quantity', 5)
+            .eq('status', 'active');
+        
+        document.getElementById('low-stock').textContent = lowStockCount || 0;
 
     } catch (error) {
         console.error('Stats error:', error);
