@@ -29,19 +29,24 @@ if (contactForm) {
             // Get form data
             const formData = {
                 name: document.getElementById('name').value.trim(),
-                email: document.getElementById('email').value.trim(),
+                email: null, // Email field removed from form
                 phone: document.getElementById('phone').value.trim(),
                 subject: document.getElementById('interest').value,
                 message: document.getElementById('message').value.trim(),
                 status: 'new'
             };
             
+            console.log('Submitting contact form:', formData);
+            
             // Insert into Supabase
             const { data, error } = await supabase
                 .from('contact_messages')
                 .insert([formData]);
             
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error:', error);
+                throw error;
+            }
             
             // Success!
             submitBtn.querySelector('span').textContent = '✓ Message Sent!';
