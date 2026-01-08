@@ -62,7 +62,7 @@ async function loadDashboardStats() {
             .from('products')
             .select('*', { count: 'exact', head: true })
             .lt('stock_quantity', 5)
-            .eq('status', 'active');
+            .eq('is_active', true); // FIXED: Changed from status to is_active
         
         document.getElementById('low-stock').textContent = lowStockCount || 0;
 

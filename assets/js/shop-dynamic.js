@@ -40,12 +40,12 @@ async function loadProductsFromDB() {
         const { data, error } = await supabaseClient
             .from('products')
             .select('*')
-            .eq('status', 'active') // Only show active products
+            .eq('is_active', true) // FIXED: Changed from status to is_active
             .order('created_at', { ascending: false });
 
         if (error) {
             console.error('Error loading products:', error);
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);"><div style="font-size: 3rem; margin-bottom: 1rem;">😔</div><div>Error loading products. Please refresh the page.</div></div>';
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);"><div style="font-size: 3rem; margin-bottom: 1rem;">😔</div><div>Error loading products. Please refresh the page.</div><p style="font-size: 0.875rem; margin-top: 0.5rem;">Error: ' + error.message + '</p></div>';
             return;
         }
 
