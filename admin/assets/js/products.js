@@ -180,7 +180,7 @@ async function editProduct(productId) {
         document.getElementById('product-price').value = product.price;
         document.getElementById('product-stock').value = product.stock_quantity;
         document.getElementById('product-description').value = product.description || '';
-        document.getElementById('product-image').value = product.image_url || '';
+        // File input value cleared - upload new image or keep existing
         document.getElementById('product-badge').value = product.badge || '';
         document.getElementById('product-active').checked = product.is_active;
         document.getElementById('product-modal').style.display = 'flex';
@@ -196,13 +196,55 @@ async function saveProduct(event) {
     event.preventDefault();
 
     try {
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.querySelector('span').textContent;
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = 'Saving...';
+
+        let imageUrl = null;
+        
+        // Handle image upload
+        const imageInput = document.getElementById('product-image');
+        if (imageInput.files && imageInput.files[0]) {
+            const file = imageInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `products/${fileName}`;
+            
+            // Upload to Supabase Storage
+            const { data: uploadData, error: uploadError } = await supabaseClient
+                .storage
+                .from('product-images')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+            
+            if (uploadError) {
+                console.error('Upload error:', uploadError);
+                throw new Error('Failed to upload image: ' + uploadError.message);
+            }
+            
+            // Get public URL
+            const { data: urlData } = supabaseClient
+                .storage
+                .from('product-images')
+                .getPublicUrl(filePath);
+            
+            imageUrl = urlData.publicUrl;
+        } else if (editingProductId) {
+            // Keep existing image if editing and no new image
+            const existingProduct = allProducts.find(p => p.id === editingProductId);
+            imageUrl = existingProduct?.image_url || null;
+        }
+
         const productData = {
             name: document.getElementById('product-name').value.trim(),
             category: document.getElementById('product-category').value,
             price: parseFloat(document.getElementById('product-price').value),
             stock_quantity: parseInt(document.getElementById('product-stock').value),
             description: document.getElementById('product-description').value.trim() || null,
-            image_url: document.getElementById('product-image').value.trim() || null,
+            image_url: imageUrl,
             badge: document.getElementById('product-badge').value || null,
             is_active: document.getElementById('product-active').checked
         };
@@ -214,7 +256,10 @@ async function saveProduct(event) {
                 .update({ ...productData, updated_at: new Date().toISOString() })
                 .eq('id', editingProductId);
 
-            if (error) throw error;
+            if (error) {
+                console.error('Update error:', error);
+                throw error;
+            }
 
             showNotification('Product updated successfully!', 'success');
         } else {
@@ -223,7 +268,10 @@ async function saveProduct(event) {
                 .from('products')
                 .insert([productData]);
 
-            if (error) throw error;
+            if (error) {
+                console.error('Insert error:', error);
+                throw error;
+            }
 
             showNotification('Product added successfully!', 'success');
         }
@@ -234,6 +282,9 @@ async function saveProduct(event) {
     } catch (error) {
         console.error('Save product error:', error);
         showNotification('Error saving product: ' + error.message, 'error');
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = 'Save Product';
     }
 }
 
@@ -244,22 +295,26 @@ async function toggleProductStatus(productId, newStatus) {
     }
 
     try {
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from('products')
             .update({ 
                 is_active: newStatus,
                 updated_at: new Date().toISOString()
             })
-            .eq('id', productId);
+            .eq('id', productId)
+            .select();
 
-        if (error) throw error;
+        if (error) {
+            console.error('Toggle status error:', error);
+            throw error;
+        }
 
         showNotification(`Product ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
         loadProducts();
         
     } catch (error) {
         console.error('Toggle status error:', error);
-        showNotification('Error updating product status', 'error');
+        showNotification('Error updating product status: ' + error.message, 'error');
     }
 }
 
@@ -270,12 +325,24 @@ async function deleteProduct(productId, productName) {
     }
 
     try {
-        const { error } = await supabaseClient
+        console.log('Attempting to delete product:', productId);
+        
+        const { data, error } = await supabaseClient
             .from('products')
             .delete()
-            .eq('id', productId);
+            .eq('id', productId)
+            .select();
 
-        if (error) throw error;
+        if (error) {
+            console.error('Delete error details:', error);
+            throw error;
+        }
+
+        console.log('Delete response:', data);
+
+        if (!data || data.length === 0) {
+            throw new Error('Product not found or already deleted');
+        }
 
         showNotification('Product deleted successfully!', 'success');
         loadProducts();
