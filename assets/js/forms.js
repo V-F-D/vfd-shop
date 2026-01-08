@@ -32,7 +32,7 @@ if (contactForm) {
             // Get form data
             const formData = {
                 name: document.getElementById('name').value.trim(),
-                email: null, // Email field removed from form
+                email: document.getElementById('email').value.trim() || null, 
                 phone: document.getElementById('phone').value.trim(),
                 subject: document.getElementById('interest').value,
                 message: document.getElementById('message').value.trim(),
