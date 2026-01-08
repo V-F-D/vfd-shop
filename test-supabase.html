@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Forms Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; background: #f5f5f5; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #45a049; }
+        .log { background: #000; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; margin-top: 10px; max-height: 300px; overflow-y: auto; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 VFD Supabase Forms Debug</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Supabase Connection</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-log" class="log">Click button to test...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Contact Form Submit</h2>
+        <button onclick="testContactForm()">Submit Test Contact</button>
+        <div id="contact-log" class="log">Click button to test...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Enrollment Submit</h2>
+        <button onclick="testEnrollment()">Submit Test Enrollment</button>
+        <div id="enrollment-log" class="log">Click button to test...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Check Tables & RLS</h2>
+        <button onclick="checkTables()">Check Tables</button>
+        <button onclick="checkRLS()">Check RLS Policies</button>
+        <div id="tables-log" class="log">Click button to test...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase config
+        const SUPABASE_URL = 'https://vjhrmxfsiwmbeuswdagb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqaHJteGZzaXdtYmV1c3dkYWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3Njg5NzcsImV4cCI6MjA4MzM0NDk3N30.THudEElbjP_sBG9wyH5_RdXAuTsjH2wyraNTafeAoKc';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = isError ? 'error' : 'success';
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        async function testConnection() {
+            const logId = 'connection-log';
+            document.getElementById(logId).innerHTML = '';
+            
+            try {
+                log(logId, '🔌 Testing Supabase connection...');
+                log(logId, `URL: ${SUPABASE_URL}`);
+                log(logId, `Key: ${SUPABASE_ANON_KEY.substring(0, 20)}...`);
+                
+                // Try to query products table (should exist)
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    log(logId, `❌ ERROR: ${error.message}`, true);
+                    log(logId, `Details: ${JSON.stringify(error, null, 2)}`, true);
+                } else {
+                    log(logId, '✅ Connection successful!');
+                    log(logId, `Response: ${JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                log(logId, `❌ EXCEPTION: ${error.message}`, true);
+            }
+        }
+
+        async function testContactForm() {
+            const logId = 'contact-log';
+            document.getElementById(logId).innerHTML = '';
+            
+            try {
+                log(logId, '📧 Testing contact form submission...');
+                
+                const formData = {
+                    name: 'Debug Test User',
+                    email: null,
+                    phone: '+254700000000',
+                    subject: 'test',
+                    message: 'This is a debug test from test page',
+                    status: 'new'
+                };
+                
+                log(logId, `Data: ${JSON.stringify(formData, null, 2)}`);
+                
+                const { data, error } = await supabase
+                    .from('contact_messages')
+                    .insert([formData])
+                    .select();
+                
+                if (error) {
+                    log(logId, `❌ ERROR: ${error.message}`, true);
+                    log(logId, `Code: ${error.code}`, true);
+                    log(logId, `Details: ${JSON.stringify(error, null, 2)}`, true);
+                } else {
+                    log(logId, '✅ Contact form submitted successfully!');
+                    log(logId, `Inserted: ${JSON.stringify(data, null, 2)}`);
+                }
+            } catch (error) {
+                log(logId, `❌ EXCEPTION: ${error.message}`, true);
+            }
+        }
+
+        async function testEnrollment() {
+            const logId = 'enrollment-log';
+            document.getElementById(logId).innerHTML = '';
+            
+            try {
+                log(logId, '📚 Testing enrollment submission...');
+                
+                const formData = {
+                    full_name: 'Debug Test Student',
+                    date_of_birth: '1990-01-01',
+                    gender: 'Male',
+                    id_number: '12345678',
+                    email: 'debug@test.com',
+                    phone: '+254700000000',
+                    address: 'Test Address',
+                    city: 'Nairobi',
+                    county: 'Nairobi',
+                    education_level: 'High School',
+                    has_experience: 'No',
+                    emergency_name: 'Emergency Contact',
+                    emergency_relationship: 'Parent',
+                    emergency_phone: '+254711111111',
+                    intake_month: 'January 2026',
+                    study_mode: 'Full-time',
+                    status: 'pending'
+                };
+                
+                log(logId, `Data: ${JSON.stringify(formData, null, 2)}`);
+                
+                const { data, error } = await supabase
+                    .from('enrollments')
+                    .insert([formData])
+                    .select();
+                
+                if (error) {
+                    log(logId, `❌ ERROR: ${error.message}`, true);
+                    log(logId, `Code: ${error.code}`, true);
+                    log(logId, `Details: ${JSON.stringify(error, null, 2)}`, true);
+                } else {
+                    log(logId, '✅ Enrollment submitted successfully!');
+                    log(logId, `Inserted: ${JSON.stringify(data, null, 2)}`);
+                }
+            } catch (error) {
+                log(logId, `❌ EXCEPTION: ${error.message}`, true);
+            }
+        }
+
+        async function checkTables() {
+            const logId = 'tables-log';
+            document.getElementById(logId).innerHTML = '';
+            
+            try {
+                log(logId, '🗄️ Checking tables...');
+                
+                // Check contact_messages
+                const { count: contactCount, error: contactError } = await supabase
+                    .from('contact_messages')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (contactError) {
+                    log(logId, `❌ contact_messages: ${contactError.message}`, true);
+                } else {
+                    log(logId, `✅ contact_messages: ${contactCount} records`);
+                }
+                
+                // Check enrollments
+                const { count: enrollCount, error: enrollError } = await supabase
+                    .from('enrollments')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (enrollError) {
+                    log(logId, `❌ enrollments: ${enrollError.message}`, true);
+                } else {
+                    log(logId, `✅ enrollments: ${enrollCount} records`);
+                }
+            } catch (error) {
+                log(logId, `❌ EXCEPTION: ${error.message}`, true);
+            }
+        }
+
+        async function checkRLS() {
+            const logId = 'tables-log';
+            
+            try {
+                log(logId, '\n🔒 Checking RLS policies...');
+                log(logId, 'Note: This will test if inserts are allowed');
+                
+                // Try inserting a test record
+                const testData = {
+                    name: 'RLS Test',
+                    email: null,
+                    phone: '+254700000000',
+                    subject: 'rls_test',
+                    message: 'Testing RLS policy',
+                    status: 'new'
+                };
+                
+                const { data, error } = await supabase
+                    .from('contact_messages')
+                    .insert([testData])
+                    .select();
+                
+                if (error) {
+                    if (error.code === '42501') {
+                        log(logId, '❌ RLS BLOCKING! Policy not allowing inserts', true);
+                        log(logId, 'Fix: Run FIX_FORMS_RLS.sql in Supabase', true);
+                    } else {
+                        log(logId, `❌ ERROR: ${error.message}`, true);
+                    }
+                } else {
+                    log(logId, '✅ RLS Policy OK - Inserts allowed!');
+                }
+            } catch (error) {
+                log(logId, `❌ EXCEPTION: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
