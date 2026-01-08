@@ -281,8 +281,9 @@ function showNotification(message, type = 'info') {
       padding: 1rem 1.5rem;
       border-radius: 0.75rem;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      max-width: 400px;
-      z-index: 10000;
+      width: auto;
+      max-width: min(400px, 90vw);
+      z-index: 99999;
       animation: slideInRight 0.3s ease-out;
       display: flex;
       align-items: center;

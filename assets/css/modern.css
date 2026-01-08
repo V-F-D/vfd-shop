@@ -1411,6 +1411,10 @@ img {
   .hero-stats {
     gap: var(--space-md);
   }
+
+  .hero-scroll {
+    display: none;
+  }
 }
 
 /* ========================================
