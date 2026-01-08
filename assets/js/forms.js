@@ -2,6 +2,9 @@
 // VFD - Contact Form & Enrollments Handler
 // ==========================================
 
+// Wait for DOM to be fully loaded before accessing form elements
+document.addEventListener('DOMContentLoaded', () => {
+
 // Supabase configuration
 const SUPABASE_URL = 'https://vjhrmxfsiwmbeuswdagb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqaHJteGZzaXdtYmV1c3dkYWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3Njg5NzcsImV4cCI6MjA4MzM0NDk3N30.THudEElbjP_sBG9wyH5_RdXAuTsjH2wyraNTafeAoKc';
@@ -223,3 +226,5 @@ if (!document.querySelector('#vfd-notification-styles')) {
     `;
     document.head.appendChild(style);
 }
+
+}); // End DOMContentLoaded
