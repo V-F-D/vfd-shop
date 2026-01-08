@@ -67,10 +67,21 @@
     --border-color: #374151;
 }
 
-/* Fix SVG stroke colors in dark mode */
+/* Fix ALL SVG icons to respect theme - CRITICAL FIX */
 [data-theme="dark"] svg {
     stroke: currentColor;
+    color: inherit;
 }
+
+[data-theme="dark"] .icon-btn svg,
+[data-theme="dark"] .icon-btn {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .header-actions svg {
+    stroke: var(--text-primary);
+}
+
 
 * {
     margin: 0;
@@ -573,6 +584,25 @@ tr:last-child td {
     color: var(--text-secondary);
 }
 
+/* Mobile Menu Button */
+.mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 101;
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+}
+
 /* Mobile overlay */
 .sidebar-overlay {
     display: none;
@@ -591,6 +621,10 @@ tr:last-child td {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
     .sidebar {
         transform: translateX(-100%);
     }
@@ -602,6 +636,18 @@ tr:last-child td {
     
     .main-content {
         margin-left: 0;
+    }
+    
+    .top-header {
+        padding-left: 4rem;
+    }
+    
+    .header-left h1 {
+        font-size: 1.25rem;
+    }
+    
+    .header-subtitle {
+        display: none;
     }
     
     .stats-grid {
@@ -622,6 +668,20 @@ tr:last-child td {
     
     th, td {
         padding: var(--space-sm) var(--space-md);
+    }
+    
+    .card {
+        padding: var(--space-md);
+    }
+    
+    /* Simplify for 50-year-old - bigger text and buttons */
+    .btn {
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .form-control {
+        font-size: 1rem;
     }
 }
 

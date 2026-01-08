@@ -255,3 +255,32 @@ function formatDateTime(dateString) {
 function viewOrder(orderId) {
     window.location.href = `orders.html?id=${orderId}`;
 }
+
+// Mobile menu toggle for easy phone use
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar) sidebar.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
+}
+
+// Close menu when clicking overlay
+document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', toggleMobileMenu);
+    }
+    
+    // Add greeting message
+    const headerSubtitle = document.querySelector('.header-subtitle');
+    if (headerSubtitle && headerSubtitle.textContent.includes('Manage')) {
+        const hour = new Date().getHours();
+        let greeting = 'Hello!';
+        if (hour < 12) greeting = 'Good Morning!';
+        else if (hour < 17) greeting = 'Good Afternoon!';
+        else greeting = 'Good Evening!';
+        headerSubtitle.textContent = greeting + ' ' + headerSubtitle.textContent;
+    }
+});
+
