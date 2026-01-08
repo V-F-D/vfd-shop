@@ -378,13 +378,13 @@ async function handleCheckout(e) {
     const deliveryFee = subtotal >= 5000 ? 0 : 300;
     const total = subtotal + deliveryFee;
     
-    // Show loading with M-Pesa context
+    // Show loading
     submitBtn.disabled = true;
     submitBtn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
             <circle cx="12" cy="12" r="10"/>
         </svg>
-        <span>Initiating M-Pesa...</span>
+        <span>Opening WhatsApp...</span>
     `;
     
     try {
@@ -402,7 +402,7 @@ async function handleCheckout(e) {
                 delivery_fee: deliveryFee,
                 total: total,
                 status: 'pending',
-                payment_status: 'pending'
+                payment_status: 'unpaid' // Mark as unpaid since it's manual
             })
             .select()
             .single();
@@ -412,7 +412,7 @@ async function handleCheckout(e) {
         // 2. Create Order Items
         const orderItems = cart.map(item => ({
             order_id: order.id,
-            product_id: item.id, // Assuming product items have IDs
+            product_id: item.id,
             product_name: item.name,
             quantity: item.quantity,
             price: item.price,
@@ -423,27 +423,30 @@ async function handleCheckout(e) {
             .from('order_items')
             .insert(orderItems);
 
-        if (itemsError) console.error('Error saving items:', itemsError); // Log but continue
+        if (itemsError) console.error('Error saving items:', itemsError);
 
-        // 3. Initiate M-Pesa STK Push
-        const stkResponse = await fetch('/api/mpesa-stk-push', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                phoneNumber: customerPhone,
-                amount: Math.ceil(total), // Ensure integer
-                accountReference: orderNumber
-            })
+        // 3. Construct WhatsApp Message
+        let message = `*NEW ORDER ${orderNumber}* %0A`;
+        message += `Name: ${customerName} %0A`;
+        message += `Phone: ${customerPhone} %0A`;
+        message += `Address: ${deliveryAddress} %0A`;
+        message += `%0A*ITEMS:* %0A`;
+        
+        cart.forEach(item => {
+            message += `- ${item.name} (x${item.quantity}) - KSh ${(item.price * item.quantity).toLocaleString()} %0A`;
+            // Add image link if available
+            // message += `  Expression: ${item.image} %0A`; 
         });
+        
+        message += `%0A*Subtotal:* KSh ${subtotal.toLocaleString()} %0A`;
+        message += `*Delivery:* ${deliveryFee === 0 ? 'FREE' : 'KSh ' + deliveryFee} %0A`;
+        message += `*TOTAL:* KSh ${total.toLocaleString()} %0A`;
+        message += `%0AHello, I would like to pay for this order via M-Pesa. Please confirm availability.`;
 
-        const stkResult = await stkResponse.json();
-
-        if (!stkResponse.ok || !stkResult.success) {
-            throw new Error(stkResult.error || 'M-Pesa initiation failed');
-        }
-
-        // Success!
-        showNotification('✅ M-Pesa prompt sent! Check your phone to complete payment.', 'success');
+        // 4. Redirect to WhatsApp
+        const whatsappUrl = `https://wa.me/254706232927?text=${message}`;
+        
+        showNotification('✅ Order placed! Redirecting to WhatsApp...', 'success');
         
         // Clear cart
         cart = [];
@@ -451,14 +454,14 @@ async function handleCheckout(e) {
         updateCartUI();
         closeCheckoutModal();
 
-        // Optional: Redirect to success page or show detailed modal
+        // Redirect after short delay
         setTimeout(() => {
-             alert(`Order ${orderNumber} created. Please check your phone for the M-Pesa PIN prompt.`);
+             window.open(whatsappUrl, '_blank');
         }, 1000);
 
     } catch (error) {
         console.error('Checkout error:', error);
-        showNotification(error.message || 'Payment initiation failed', 'error');
+        showNotification(error.message || 'Order failed', 'error');
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
