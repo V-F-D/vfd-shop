@@ -45,6 +45,7 @@ if (contactForm) {
             
             if (error) {
                 console.error('Supabase error:', error);
+                alert('⚠️ ERROR: ' + error.message + '\n\nCode: ' + (error.code || 'N/A') + '\nHint: RLS Policy likely blocking insert.');
                 throw error;
             }
             
