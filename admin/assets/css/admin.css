@@ -615,8 +615,33 @@ tr:last-child td {
     z-index: 99;
 }
 
-.sidebar-overlay.active {
-    display: block;
+/* Dark Mode Specific Fixes */
+[data-theme="dark"] select, 
+[data-theme="dark"] input, 
+[data-theme="dark"] textarea {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-label {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] option {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Fix chart selector specifically */
+#period-filter {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
 }
 
 /* ==========================================
