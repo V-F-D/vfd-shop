@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollments - VFD Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header"><a href="index.html" class="sidebar-logo">🛍️ VFD Admin</a></div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="index.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span>Dashboard</span></a>
+                    <a href="orders.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg><span>Orders</span></a>
+                    <a href="products.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg><span>Products</span></a>
+                    <a href="customers.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span>Customers</span></a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="contacts.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span>Contacts</span></a>
+                    <a href="enrollments.html" class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg><span>Enrollments</span></a>
+                    <a href="analytics.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span>Analytics</span></a>
+                    <a href="inventory.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg><span>Inventory</span></a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <a href="settings.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span>Settings</span></a>
+                    <a href="#" onclick="logout(); return false;" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg><span>Logout</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left"><h1>Course Enrollments</h1><p class="header-subtitle">Training program applications</p></div>
+                <div class="header-right"><div class="header-actions"><button class="icon-btn" onclick="toggleTheme()"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg></button></div></div>
+            </header>
+
+            <div class="page-content">
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-value" id="total-enrollments">0</div><div class="stat-label">Total Enrollments</div></div>
+                    <div class="stat-card"><div class="stat-value" id="pending-enrollments">0</div><div class="stat-label">Pending Review</div></div>
+                    <div class="stat-card"><div class="stat-value" id="approved-enrollments">0</div><div class="stat-label">Approved</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">All Enrollments (<span id="enrollments-count">0</span>)</h2>
+                        <button onclick="loadEnrollments()" class="btn btn-secondary">Refresh</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Name</th><th>Contact</th><th>Intake</th><th>Study Mode</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                            <tbody id="enrollments-tbody"><tr><td colspan="7" style="text-align: center; padding: 3rem;"><div style="font-size: 3rem;">⏳</div><div>Loading enrollments...</div></td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        requireAuth();
+        
+        async function loadEnrollments() {
+            try {
+                const { data: enrollments } = await supabaseClient.from('enrollments').select('*').order('created_at', { ascending: false });
+                
+                const tbody = document.getElementById('enrollments-tbody');
+                if (!enrollments || !enrollments.length) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);"><div style="font-size: 3rem; margin-bottom: 1rem;">📚</div><div>No enrollments yet</div><p style="font-size: 0.875rem; margin-top: 0.5rem;">Course applications will appear here</p></td></tr>';
+                    updateStats([], 0, 0);
+                    return;
+                }
+                
+                tbody.innerHTML = enrollments.map(e => `
+                    <tr>
+                        <td><strong>${e.full_name}</strong></td>
+                        <td>
+                            <div style="font-size: 0.875rem;">${e.email}</div>
+                            <div style="font-size: 0.813rem; color: var(--text-secondary);">${e.phone}</div>
+                        </td>
+                        <td>${e.intake_month}</td>
+                        <td><span class="badge badge-info">${e.study_mode}</span></td>
+                        <td><span class="badge ${e.status === 'approved' ? 'badge-success' : e.status === 'rejected' ? 'badge-danger' : 'badge-warning'}">${e.status}</span></td>
+                        <td style="font-size: 0.875rem;">${formatDate(e.created_at)}</td>
+                        <td>
+                            <button onclick="viewEnrollment('${e.id}')" class="btn btn-sm btn-primary" title="View Details">View</button>
+                            ${e.status === 'pending' ? `
+                                <button onclick="updateStatus('${e.id}', 'approved')" class="btn btn-sm btn-success" style="margin-left: 0.5rem;" title="Approve">✓</button>
+                                <button onclick="updateStatus('${e.id}', 'rejected')" class="btn btn-sm btn-danger" style="margin-left: 0.5rem;" title="Reject">✗</button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+                
+                const pending = enrollments.filter(e => e.status === 'pending').length;
+                const approved = enrollments.filter(e => e.status === 'approved').length;
+                updateStats(enrollments, pending, approved);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('enrollments-tbody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem; color: var(--danger);">Error loading enrollments</td></tr>';
+            }
+        }
+        
+        function updateStats(enrollments, pending, approved) {
+            document.getElementById('total-enrollments').textContent = enrollments.length;
+            document.getElementById('pending-enrollments').textContent = pending;
+            document.getElementById('approved-enrollments').textContent = approved;
+            document.getElementById('enrollments-count').textContent = enrollments.length;
+        }
+        
+        async function updateStatus(id, status) {
+            if (!confirm(`Are you sure you want to ${status} this enrollment?`)) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('enrollments')
+                    .update({ status, updated_at: new Date().toISOString() })
+                    .eq('id', id);
+                    
+                if (error) throw error;
+                showNotification(`Enrollment ${status} successfully!`, 'success');
+                loadEnrollments();
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error updating status', 'error');
+            }
+        }
+        
+        async function viewEnrollment(id) {
+            try {
+                const { data } = await supabaseClient.from('enrollments').select('*').eq('id', id).single();
+                if (!data) return;
+                
+                alert(`Full Name: ${data.full_name}\nEmail: ${data.email}\nPhone: ${data.phone}\nDOB: ${data.date_of_birth}\nGender: ${data.gender || 'N/A'}\nID: ${data.id_number || 'N/A'}\nAddress: ${data.address}\nCity: ${data.city}\nCounty: ${data.county}\nEducation: ${data.education_level}\nExperience: ${data.has_experience}\n\nEmergency Contact:\nName: ${data.emergency_name}\nRelationship: ${data.emergency_relationship}\nPhone: ${data.emergency_phone}\n\nIntake: ${data.intake_month}\nMode: ${data.study_mode}\n\nAdditional Info: ${data.additional_info || 'None'}`);
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error loading enrollment details', 'error');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadEnrollments);
+    </script>
+</body>
+</html>
