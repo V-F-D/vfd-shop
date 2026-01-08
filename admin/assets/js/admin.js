@@ -289,5 +289,170 @@ document.addEventListener('DOMContentLoaded', () => {
         else greeting = 'Good Evening!';
         headerSubtitle.textContent = greeting + ' ' + headerSubtitle.textContent;
     }
+
+    // Initialize notifications
+    checkNotifications();
 });
+
+
+// ==========================================
+// Notification System
+// ==========================================
+
+async function checkNotifications() {
+    try {
+        const notifList = document.getElementById('notification-list');
+        const notifBadge = document.getElementById('notification-badge');
+        
+        if (!notifList || !notifBadge) return;
+        
+        const notifications = [];
+        
+        // 1. Pending Orders
+        const { data: orders } = await supabaseClient
+            .from('orders')
+            .select('id, customer_name, total, created_at')
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false })
+            .limit(5);
+            
+        if (orders) {
+            orders.forEach(o => {
+                notifications.push({
+                    type: 'order',
+                    title: `New Order: ${o.customer_name}`,
+                    desc: `KSh ${parseFloat(o.total).toLocaleString()} - Pending`,
+                    time: new Date(o.created_at),
+                    link: 'orders.html'
+                });
+            });
+        }
+        
+        // 2. Low Stock
+        const { data: stock } = await supabaseClient
+            .from('products')
+            .select('name, stock_quantity')
+            .lt('stock_quantity', 5)
+            .eq('is_active', true)
+            .limit(5);
+            
+        if (stock) {
+            stock.forEach(p => {
+                notifications.push({
+                    type: 'stock',
+                    title: `Low Stock: ${p.name}`,
+                    desc: `Only ${p.stock_quantity} left!`,
+                    time: new Date(), 
+                    link: 'inventory.html'
+                });
+            });
+        }
+        
+        // 3. New Messages
+        const { data: messages } = await supabaseClient
+            .from('contact_messages')
+            .select('name, subject, created_at')
+            .eq('status', 'new')
+            .order('created_at', { ascending: false })
+            .limit(3);
+            
+        if (messages) {
+            messages.forEach(m => {
+                notifications.push({
+                    type: 'message',
+                    title: `Message: ${m.name}`,
+                    desc: m.subject,
+                    time: new Date(m.created_at),
+                    link: 'contacts.html'
+                });
+            });
+        }
+        
+        // 4. Enrollments (Pending)
+        try {
+            const { data: enrollments } = await supabaseClient
+                .from('enrollments')
+                .select('full_name, course_name, created_at')
+                .eq('status', 'pending')
+                .limit(3);
+                
+            if (enrollments) {
+                enrollments.forEach(e => {
+                    notifications.push({
+                        type: 'enrollment',
+                        title: `Enrollment: ${e.full_name}`,
+                        desc: e.course_name || 'New Application',
+                        time: new Date(e.created_at),
+                        link: 'enrollments.html'
+                    });
+                });
+            }
+        } catch (e) { console.log('Enrollment fetch error', e); }
+
+        // Sort by time (newest first)
+        notifications.sort((a, b) => b.time - a.time);
+        
+        // Update UI
+        if (notifications.length > 0) {
+            notifBadge.style.display = 'flex';
+            notifBadge.textContent = notifications.length;
+            
+            notifList.innerHTML = notifications.map(n => `
+                <a href="${n.link}" class="notification-item unread">
+                    <div class="notif-icon ${n.type}">
+                        ${getNotifIcon(n.type)}
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-title">${n.title}</div>
+                        <div style="font-size: 0.813rem; color: var(--text-secondary);">${n.desc}</div>
+                        <div class="notif-time">${timeAgo(n.time)}</div>
+                    </div>
+                </a>
+            `).join('');
+        } else {
+            notifBadge.style.display = 'none';
+            notifList.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-secondary);">No new notifications</div>';
+        }
+        
+    } catch (error) {
+        console.error('Error checking notifications:', error);
+    }
+}
+
+function getNotifIcon(type) {
+    if (type === 'order') return '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>';
+    if (type === 'stock') return '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>';
+    if (type === 'message') return '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>';
+    if (type === 'enrollment') return '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>';
+    return '';
+}
+
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    const intervals = { year: 31536000, month: 2592000, day: 86400, hour: 3600, minute: 60 };
+    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+        const interval = Math.floor(seconds / secondsInUnit);
+        if (interval >= 1) return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+    }
+    return 'Just now';
+}
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notification-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+        if (dropdown.classList.contains('active')) {
+            document.addEventListener('click', closeNotifOnClickOutside);
+        }
+    }
+}
+
+function closeNotifOnClickOutside(e) {
+    const dropdown = document.getElementById('notification-dropdown');
+    const btn = document.getElementById('notification-btn');
+    if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.remove('active');
+        document.removeEventListener('click', closeNotifOnClickOutside);
+    }
+}
 
