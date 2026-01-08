@@ -302,7 +302,7 @@ Date | Name | Phone | Message | Status | Priority | Actions
 
 ```javascript
 // Generate WhatsApp link with pre-filled message
-https://wa.me/254723056432?text=New%20Order%20%23ORD123
+https://wa.me/254706232927?text=New%20Order%20%23ORD123
 ```
 
 **Triggers:**
