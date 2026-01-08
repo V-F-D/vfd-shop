@@ -1,7 +1,6 @@
 {
   "name": "vfd-shop",
   "version": "1.0.0",
-  "type": "module",
   "description": "VFD Shop E-commerce",
   "main": "index.html",
   "dependencies": {

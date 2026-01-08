@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 // HARDCODED CREDENTIALS (Fix for missing Env Vars)
 const SUPABASE_URL = 'https://vjhrmxfsiwmbeuswdagb.supabase.co';
