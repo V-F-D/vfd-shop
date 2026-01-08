@@ -34,13 +34,11 @@ async function handleLogin(event) {
     const errorMsg = document.getElementById('error-message');
     const loginBtn = event.target.querySelector('button[type="submit"]');
     const loginText = document.getElementById('login-text');
-    const loginSpinner = document.getElementById('login-spinner');
     
     // Show loading
     loginBtn.disabled = true;
-    loginText.style.display = 'none';
-    loginSpinner.style.display = 'block';
-    errorMsg.style.display = 'none';
+    if (loginText) loginText.textContent = 'Logging in...';
+    if (errorMsg) errorMsg.style.display = 'none';
     
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -51,17 +49,22 @@ async function handleLogin(event) {
         sessionStorage.setItem('vfd_admin_login_time', new Date().getTime().toString());
         sessionStorage.setItem('vfd_admin_name', 'Admin');
         
+        if (loginText) loginText.textContent = '✓ Success!';
+        
         // Redirect to dashboard
-        window.location.href = 'index.html';
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 300);
     } else {
         // Failed
-        errorMsg.textContent = '❌ Incorrect password. Please try again.';
-        errorMsg.style.display = 'block';
+        if (errorMsg) {
+            errorMsg.textContent = '❌ Incorrect password. Please try again.';
+            errorMsg.style.display = 'block';
+        }
         
         // Reset button
         loginBtn.disabled = false;
-        loginText.style.display = 'inline';
-        loginSpinner.style.display = 'none';
+        if (loginText) loginText.textContent = 'Login to Dashboard';
         
         // Clear password
         document.getElementById('password').value = '';
