@@ -3,6 +3,14 @@
 // Handles payment confirmation from M-Pesa
 // ==============================================
 
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase (Server-side)
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -62,21 +70,54 @@ export default async function handler(req, res) {
             
             console.log('Payment successful:', paymentData);
             
-            // TODO: Save to Supabase
-            // await supabase.from('payments').update({
-            //     status: 'completed',
-            //     mpesa_receipt: paymentData.mpesaReceiptNumber,
-            //     transaction_date: paymentData.transactionDate
-            // }).eq('checkout_request_id', CheckoutRequestID);
+            // Save to Supabase transactions (optional log)
+            // await supabase.from('mpesa_transactions').insert(paymentData);
             
-            // TODO: Update order status
-            // await supabase.from('orders').update({
-            //     payment_status: 'paid',
-            //     status: 'confirmed'
-            // }).eq('checkout_request_id', CheckoutRequestID);
-            
-            // TODO: Send confirmation email/SMS to customer
-            
+            // Update order status and get ID
+            const { data: updatedOrder, error: orderError } = await supabase
+                .from('orders')
+                .update({
+                    payment_status: 'paid',
+                    status: 'confirmed', 
+                    mpesa_receipt: paymentData.mpesaReceiptNumber
+                })
+                .eq('checkout_request_id', CheckoutRequestID)
+                .select()
+                .single();
+
+            if (orderError) {
+                console.error('Failed to update order status:', orderError);
+            } else if (updatedOrder) {
+                // Deduct Stock Quantity
+                const { data: orderItems } = await supabase
+                    .from('order_items')
+                    .select('product_id, quantity')
+                    .eq('order_id', updatedOrder.id);
+                
+                if (orderItems && orderItems.length > 0) {
+                    for (const item of orderItems) {
+                        try {
+                            // Fetch current stock
+                            const { data: product } = await supabase
+                                .from('products')
+                                .select('stock_quantity')
+                                .eq('id', item.product_id)
+                                .single();
+                                
+                            if (product) {
+                                const newStock = Math.max(0, product.stock_quantity - item.quantity);
+                                await supabase
+                                    .from('products')
+                                    .update({ stock_quantity: newStock })
+                                    .eq('id', item.product_id);
+                            }
+                        } catch (err) {
+                            console.error(`Failed to update stock for product ${item.product_id}:`, err);
+                        }
+                    }
+                }
+            }
+
             return res.status(200).json({
                 ResultCode: 0,
                 ResultDesc: 'Success'
@@ -91,11 +132,14 @@ export default async function handler(req, res) {
                 resultDesc: ResultDesc
             });
             
-            // TODO: Update payment status in Supabase
-            // await supabase.from('payments').update({
-            //     status: 'failed',
-            //     error_message: ResultDesc
-            // }).eq('checkout_request_id', CheckoutRequestID);
+            // Update payment status in Supabase
+            await supabase
+                .from('orders')
+                .update({
+                    payment_status: 'failed',
+                    notes: `Payment failed: ${ResultDesc}`
+                })
+                .eq('checkout_request_id', CheckoutRequestID);
             
             return res.status(200).json({
                 ResultCode: 0,

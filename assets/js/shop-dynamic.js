@@ -104,7 +104,7 @@ function displayProducts(productsToShow) {
                     <div class="product-price">KSh ${parseFloat(product.price).toLocaleString()}</div>
                     <button 
                         class="add-to-cart-btn" 
-                        onclick="addToCart(${product.id})" 
+                        onclick="addToCart('${product.id}')" 
                         ${isOutOfStock ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
@@ -367,62 +367,98 @@ async function handleCheckout(e) {
     const customerPhone = document.getElementById('customerPhone').value;
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     
+    // Validate phone for M-Pesa (must start with 254)
+    if (!/^254\d{9}$/.test(customerPhone)) {
+        showNotification('Phone number must be in format 254XXXXXXXXX', 'error');
+        return;
+    }
+
     // Calculate totals
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = subtotal >= 5000 ? 0 : 300;
     const total = subtotal + deliveryFee;
     
-    // Show loading
+    // Show loading with M-Pesa context
     submitBtn.disabled = true;
     submitBtn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
             <circle cx="12" cy="12" r="10"/>
         </svg>
-        <span>Processing...</span>
+        <span>Initiating M-Pesa...</span>
     `;
     
     try {
-        // Save order to localStorage (will be Supabase)
-        const orders = JSON.parse(localStorage.getItem('vfd_orders') || '[]');
-        const orderId = 'ORD' + Date.now();
-        orders.push({
-            id: orderId,
-            customer_name: customerName,
-            customer_phone: customerPhone,
-            delivery_address: deliveryAddress,
-            items: cart,
-            subtotal: subtotal,
-            delivery_fee: deliveryFee,
-            total: total,
-            status: 'pending',
-            created_at: new Date().toISOString()
+        // 1. Create Order in Supabase
+        const orderNumber = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+        
+        const { data: order, error: orderError } = await supabaseClient
+            .from('orders')
+            .insert({
+                order_number: orderNumber,
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                delivery_address: deliveryAddress,
+                subtotal: subtotal,
+                delivery_fee: deliveryFee,
+                total: total,
+                status: 'pending',
+                payment_status: 'pending'
+            })
+            .select()
+            .single();
+
+        if (orderError) throw new Error('Failed to create order: ' + orderError.message);
+
+        // 2. Create Order Items
+        const orderItems = cart.map(item => ({
+            order_id: order.id,
+            product_id: item.id, // Assuming product items have IDs
+            product_name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            subtotal: item.price * item.quantity
+        }));
+
+        const { error: itemsError } = await supabaseClient
+            .from('order_items')
+            .insert(orderItems);
+
+        if (itemsError) console.error('Error saving items:', itemsError); // Log but continue
+
+        // 3. Initiate M-Pesa STK Push
+        const stkResponse = await fetch('/api/mpesa-stk-push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                phoneNumber: customerPhone,
+                amount: Math.ceil(total), // Ensure integer
+                accountReference: orderNumber
+            })
         });
-        localStorage.setItem('vfd_orders', JSON.stringify(orders));
-        
-        // Show development notice
-        showNotification('ℹ️ M-Pesa payment is coming soon! We\'ll contact you to complete your order.', 'info');
-        
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Order received message
-        showNotification('✅ Order received! We\'ll contact you shortly to confirm.', 'success');
+
+        const stkResult = await stkResponse.json();
+
+        if (!stkResponse.ok || !stkResult.success) {
+            throw new Error(stkResult.error || 'M-Pesa initiation failed');
+        }
+
+        // Success!
+        showNotification('✅ M-Pesa prompt sent! Check your phone to complete payment.', 'success');
         
         // Clear cart
         cart = [];
         saveCart();
         updateCartUI();
-        
-        // Close modal
         closeCheckoutModal();
-        
-        // Show success message with order ID
+
+        // Optional: Redirect to success page or show detailed modal
         setTimeout(() => {
-            showNotification(`Order ${orderId} received! We'll contact you shortly.`, 'success');
+             alert(`Order ${orderNumber} created. Please check your phone for the M-Pesa PIN prompt.`);
         }, 1000);
-        
+
     } catch (error) {
         console.error('Checkout error:', error);
-        showNotification('Payment failed. Please try again or contact us.', 'error');
+        showNotification(error.message || 'Payment initiation failed', 'error');
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;

@@ -3,6 +3,14 @@
 // Based on actual Safaricom API structure
 // ==========================================
 
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase (Server-side)
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export default async function handler(req, res) {
     // Only allow POST
     if (req.method !== 'POST') {
@@ -119,6 +127,24 @@ export default async function handler(req, res) {
         // Check response
         if (stkData.ResponseCode === '0') {
             // Success!
+            
+            // Update Order in Supabase with CheckoutRequestID
+            if (accountReference) {
+                const { error: updateError } = await supabase
+                    .from('orders')
+                    .update({ 
+                        checkout_request_id: stkData.CheckoutRequestID,
+                        merchant_request_id: stkData.MerchantRequestID,
+                        payment_status: 'processing'
+                    })
+                    .eq('order_number', accountReference);
+
+                if (updateError) {
+                    console.error('Failed to update order with CheckoutRequestID:', updateError);
+                    // We don't fail the request, but logging is critical
+                }
+            }
+
             return res.status(200).json({
                 success: true,
                 message: 'STK Push sent successfully',
