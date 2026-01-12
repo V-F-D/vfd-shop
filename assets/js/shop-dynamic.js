@@ -434,8 +434,6 @@ async function handleCheckout(e) {
         
         cart.forEach(item => {
             message += `- ${item.name} (x${item.quantity}) - KSh ${(item.price * item.quantity).toLocaleString()} %0A`;
-            // Add image link if available
-            // message += `  Expression: ${item.image} %0A`; 
         });
         
         message += `%0A*Subtotal:* KSh ${subtotal.toLocaleString()} %0A`;
@@ -443,7 +441,22 @@ async function handleCheckout(e) {
         message += `*TOTAL:* KSh ${total.toLocaleString()} %0A`;
         message += `%0AHello, I would like to pay for this order via M-Pesa. Please confirm availability.`;
 
-        // 4. Redirect to WhatsApp
+        // 4. Fire Google Analytics Purchase Event
+        if (typeof gtag === 'function') {
+            gtag('event', 'purchase', {
+                transaction_id: orderNumber,
+                value: total,
+                currency: 'KES',
+                items: cart.map(item => ({
+                    item_id: item.id,
+                    item_name: item.name,
+                    price: item.price,
+                    quantity: item.quantity
+                }))
+            });
+        }
+
+        // 5. Redirect to WhatsApp
         const whatsappUrl = `https://wa.me/254706232927?text=${message}`;
         
         showNotification('✅ Order placed! Redirecting to WhatsApp...', 'success');
