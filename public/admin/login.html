@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - VFD</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card fade-in">
+            <div class="login-header">
+                <div class="login-logo">
+                    <svg class="brand-icon" viewBox="0 0 500 500" width="60" height="60">
+                        <path fill="currentColor" d="M265.14,348.81c-56.89-56.91-112.28-112.3-168.02-168.06c0-8.66,0-18.08,0-29.56c46.19,46.16,91.09,91.04,137.26,137.19   c0-45.93,0-90.39,0-136.05c3.92,0,6.81,0,9.7,0c29.5,0,59.01,0.11,88.51-0.04c15.01-0.08,27.54,5.58,38.47,15.44   c16.24,14.65,24.9,33.46,29.53,54.39c1.05,4.72,1.47,9.59,2.29,15.19c-10.26,0-19.64,0-29.67,0c-0.83-3.73-1.62-7.66-2.57-11.54   c-3.02-12.32-7.61-23.88-16.56-33.25c-6.53-6.85-14.29-10.39-24-10.27c-21.29,0.27-42.59,0.08-64.55,0.08c0,17.69,0,34.95,0,53.25   c18.15,0,36.02,0,54.32,0c0,10.2,0,19.39,0,29.62c-17.92,0-35.8,0-54.72,0C265.14,293.35,265.14,320.48,265.14,348.81z"/>
+                        <path fill="currentColor" d="M402.43,264.39c-4.45,29.92-13.99,56.18-39.33,74.11c-11.68,8.26-30.73,12.57-44.16,6.87c0-8.05,0-16.37,0-25.62   c3.18-0.16,6.35-0.59,9.49-0.43c12.95,0.68,22.62-5.1,30.08-15.12c7.48-10.05,11.45-21.59,13.79-33.77   c0.35-1.84,0.74-3.68,1.22-6.03C382.86,264.39,391.98,264.39,402.43,264.39z"/>
+                    </svg>
+                </div>
+                <h1 class="login-title">VFD Admin</h1>
+                <p class="login-subtitle" id="greeting-message" style="font-size: 1rem; color: var(--primary);"></p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="password">Enter Your Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" class="form-control" placeholder="Password" required style="padding-right: 3rem;">
+                        <button type="button" onclick="togglePassword()" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 0.5rem;" title="Show/Hide Password">
+                            <svg id="eye-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path id="eye-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                <path id="eye-closed" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" style="display: none;"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="error-message" style="color: var(--danger); margin-bottom: 1rem; display: none; text-align: center; font-size: 0.875rem;"></div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.875rem;">
+                    <span id="login-text">Login to Dashboard</span>
+                </button>
+            </form>
+
+            <div style="margin-top: var(--space-xl); text-align: center; color: var(--text-secondary); font-size: 0.813rem;">
+                <p>© 2026 Victory Fashion Designers</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Time-based greeting
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('greeting-message');
+            if (hour < 12) {
+                greetingEl.textContent = '☀️ Good Morning! Ready to manage your shop?';
+            } else if (hour < 17) {
+                greetingEl.textContent = '🌤️ Good Afternoon! Let\'s check today\'s orders.';
+            } else {
+                greetingEl.textContent = '🌙 Good Evening! Time to review the day.';
+            }
+        }
+        
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeOpen = document.getElementById('eye-open');
+            const eyeClosed = document.getElementById('eye-closed');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        }
+        
+        updateGreeting();
+    </script>
+</body>
+</html>
