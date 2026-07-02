@@ -286,6 +286,35 @@ export default function AdminPage() {
     setIsProductModalOpen(true);
   };
 
+  const handleSeedProducts = async () => {
+    setLoading(true);
+    const authPin = sessionStorage.getItem("vfd_admin_pin") || "";
+    try {
+      const res = await fetch("/api/admin/db", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-pin": authPin,
+        },
+        body: JSON.stringify({
+          action: "seed",
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert("🎉 Sample products seeded successfully!");
+        fetchDashboardData(authPin);
+      } else {
+        throw new Error(result.error || result.message || "Seeding failed.");
+      }
+    } catch (err: any) {
+      alert(`Database Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const deleteProduct = async (prodId: string) => {
     if (!confirm("Are you sure you want to delete this product? This is irreversible.")) return;
 
@@ -746,47 +775,66 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {products
-                      .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                      .map((p) => (
-                        <div key={p.id} className="bg-bg-primary p-4 rounded-xl border border-border-custom flex gap-4">
-                          <div className="h-16 w-16 bg-bg-tertiary rounded overflow-hidden shrink-0 border border-border-custom">
-                            <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
-                          </div>
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              <div className="flex justify-between items-start">
-                                <h4 className="font-bold text-sm text-text-primary pr-2 line-clamp-1">{p.name}</h4>
-                                <span className={`text-[9px] px-1.5 rounded font-bold uppercase ${p.is_active ? 'bg-green-950/20 text-green-500' : 'bg-red-950/20 text-red-500'}`}>
-                                  {p.is_active ? 'Active' : 'Draft'}
-                                </span>
-                              </div>
-                              <span className="text-[10px] text-brand-gold font-bold uppercase tracking-wider block mt-0.5">{p.category}</span>
+                  {products.length === 0 ? (
+                    <div className="py-12 border border-dashed border-border-custom rounded-xl text-center space-y-4 bg-bg-primary/50">
+                      <ShoppingBag size={32} className="text-brand-gold mx-auto" />
+                      <div className="space-y-1">
+                        <p className="font-serif text-sm font-bold">Catalog is Empty</p>
+                        <p className="text-xs text-text-secondary max-w-sm mx-auto">
+                          Seed the database with 6 ready-to-wear products featuring elegant melanin-tone models.
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleSeedProducts}
+                        disabled={loading}
+                        className="bg-brand-plum dark:bg-brand-gold dark:text-brand-charcoal text-brand-cream px-5 py-2.5 rounded font-bold text-xs uppercase tracking-wider shadow"
+                      >
+                        {loading ? "Seeding..." : "Seed Sample Products"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {products
+                        .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .map((p) => (
+                          <div key={p.id} className="bg-bg-primary p-4 rounded-xl border border-border-custom flex gap-4">
+                            <div className="h-16 w-16 bg-bg-tertiary rounded overflow-hidden shrink-0 border border-border-custom">
+                              <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
                             </div>
-                            <div className="flex items-center justify-between border-t border-border-custom pt-2 mt-2">
-                              <span className="font-bold text-xs">KES {p.price.toLocaleString()}</span>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => openEditProductModal(p)}
-                                  className="text-text-tertiary hover:text-brand-gold transition-colors p-1"
-                                  title="Edit Product"
-                                >
-                                  <Edit2 size={14} />
-                                </button>
-                                <button
-                                  onClick={() => deleteProduct(p.id)}
-                                  className="text-text-tertiary hover:text-red-500 transition-colors p-1"
-                                  title="Delete Product"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
+                            <div className="flex-1 flex flex-col justify-between">
+                              <div>
+                                <div className="flex justify-between items-start">
+                                  <h4 className="font-bold text-sm text-text-primary pr-2 line-clamp-1">{p.name}</h4>
+                                  <span className={`text-[9px] px-1.5 rounded font-bold uppercase ${p.is_active ? 'bg-green-950/20 text-green-500' : 'bg-red-950/20 text-red-500'}`}>
+                                    {p.is_active ? 'Active' : 'Draft'}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] text-brand-gold font-bold uppercase tracking-wider block mt-0.5">{p.category}</span>
+                              </div>
+                              <div className="flex items-center justify-between border-t border-border-custom pt-2 mt-2">
+                                <span className="font-bold text-xs">KES {p.price.toLocaleString()}</span>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => openEditProductModal(p)}
+                                    className="text-text-tertiary hover:text-brand-gold transition-colors p-1"
+                                    title="Edit Product"
+                                  >
+                                    <Edit2 size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => deleteProduct(p.id)}
+                                    className="text-text-tertiary hover:text-red-500 transition-colors p-1"
+                                    title="Delete Product"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                  </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
               )}
 
