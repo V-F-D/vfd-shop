@@ -581,13 +581,13 @@ export default function AdminPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Sidebar Navigation */}
-            <div className="lg:col-span-3 bg-bg-secondary rounded-xl border border-border-custom p-4 space-y-2">
+            <div className="lg:col-span-3 bg-bg-secondary rounded-xl border border-border-custom p-4 flex flex-row overflow-x-auto gap-2 lg:flex-col lg:overflow-x-visible lg:gap-0 lg:space-y-2 scrollbar-none pb-3 lg:pb-4">
               {[
-                { tab: "dashboard", label: "Dashboard Overview", icon: LayoutDashboard },
-                { tab: "orders", label: "Manage Orders", icon: ListOrdered },
-                { tab: "products", label: "Manage Products (CRUD)", icon: ShoppingBag },
-                { tab: "enrollments", label: "Student Applications", icon: Users },
-                { tab: "messages", label: "Contact Inquiries", icon: MessageSquare },
+                { tab: "dashboard", label: "Overview", icon: LayoutDashboard },
+                { tab: "orders", label: "Orders", icon: ListOrdered },
+                { tab: "products", label: "Products", icon: ShoppingBag },
+                { tab: "enrollments", label: "Students", icon: Users },
+                { tab: "messages", label: "Messages", icon: MessageSquare },
               ].map((item) => (
                 <button
                   key={item.tab}
@@ -595,13 +595,13 @@ export default function AdminPage() {
                     setActiveTab(item.tab as any);
                     setSearchTerm("");
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition-all shrink-0 lg:w-full lg:px-4 lg:py-3 lg:gap-3 ${
                     activeTab === item.tab
                       ? "bg-brand-plum text-brand-cream dark:bg-brand-gold dark:text-brand-charcoal"
                       : "text-text-secondary hover:bg-bg-tertiary"
                   }`}
                 >
-                  <item.icon size={16} />
+                  <item.icon size={14} className="shrink-0" />
                   <span>{item.label}</span>
                 </button>
               ))}
@@ -864,16 +864,48 @@ export default function AdminPage() {
                               <h4 className="font-bold text-sm text-text-primary">{en.full_name}</h4>
                               <p className="text-[10px] text-text-tertiary">Registered on {new Date(en.created_at).toLocaleDateString()}</p>
                             </div>
-                            <select
-                              value={en.status}
-                              onChange={(e) => updateEnrollmentStatus(en.id, e.target.value)}
-                              className="bg-bg-secondary border border-border-custom px-2.5 py-1 rounded text-xs text-text-primary focus:outline-none"
-                            >
-                              <option value="pending">Pending</option>
-                              <option value="approved">Approved</option>
-                              <option value="completed">Completed</option>
-                              <option value="rejected">Rejected</option>
-                            </select>
+                            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+                              <select
+                                value={en.status}
+                                onChange={(e) => updateEnrollmentStatus(en.id, e.target.value)}
+                                className="bg-bg-secondary border border-border-custom px-2 py-1.5 rounded text-xs text-text-primary focus:outline-none"
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="completed">Completed</option>
+                                <option value="rejected">Rejected</option>
+                              </select>
+                              
+                              <button
+                                onClick={() => {
+                                  let cleanPhone = en.phone.replace(/[\s\+\-]/g, "");
+                                  if (cleanPhone.startsWith("0")) {
+                                    cleanPhone = "254" + cleanPhone.substring(1);
+                                  }
+                                  if (!cleanPhone.startsWith("254")) {
+                                    cleanPhone = "254" + cleanPhone;
+                                  }
+
+                                  let template = "";
+                                  if (en.status === "pending") {
+                                    template = `Hello ${en.full_name}, this is Victory Fashion Academy. We have received your enrollment application for the ${en.intake_month} intake (${en.study_mode} mode). We are currently reviewing your details and will get in touch with you shortly. Thank you!`;
+                                  } else if (en.status === "approved") {
+                                    template = `Hello ${en.full_name}, congratulations! Your application to Victory Fashion Academy has been APPROVED for the ${en.intake_month} intake (${en.study_mode} mode). Please visit our studio in Ruiru (2nd Sunrise Ave) to collect your official admission letter and start checklist. We look forward to meeting you!`;
+                                  } else if (en.status === "completed") {
+                                    template = `Hello ${en.full_name}, this is to confirm that your academic training profile for Victory Fashion Academy has been marked as Completed. Congratulations on finishing your training program!`;
+                                  } else if (en.status === "rejected") {
+                                    template = `Hello ${en.full_name}, thank you for your application to Victory Fashion Academy. Unfortunately, we are unable to accept your application for this intake due to seat constraints. We wish you all the best.`;
+                                  }
+
+                                  const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(template)}`;
+                                  window.open(url, "_blank");
+                                }}
+                                className="bg-green-950/20 text-green-500 hover:bg-green-600 hover:text-white border border-green-500/30 px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all"
+                              >
+                                <MessageSquare size={12} />
+                                <span>Notify Applicant</span>
+                              </button>
+                            </div>
                           </div>
 
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[10px] text-text-secondary border-t border-b border-border-custom/50 py-3">
