@@ -65,7 +65,7 @@ export default function CartDrawer() {
         message += `Address: ${address}\n\n`;
         message += `*ITEMS:*\n`;
         cart.forEach((item) => {
-          message += `- ${item.name} (x${item.quantity}) — KES ${(item.price * item.quantity).toLocaleString()}\n`;
+          message += `- ${item.name} (x${item.quantity}) — KES ${(item.price * item.quantity).toLocaleString()}\n  Link: ${item.image_url}\n`;
         });
         message += `\n*Subtotal:* KES ${cartTotal.toLocaleString()}\n`;
         message += `*Delivery:* ${deliveryFee === 0 ? "FREE" : "KES " + deliveryFee}\n`;
