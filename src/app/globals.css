@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #F6F1E7; /* Brand Cream */
+    --foreground: #1E1B1A; /* Brand Charcoal */
+    
+    --bg-primary: #F6F1E7;
+    --bg-secondary: #FFFFFF;
+    --bg-tertiary: #E9D5C4; /* Brand Blush */
+    
+    --text-primary: #1E1B1A;
+    --text-secondary: #4E4644;
+    --text-tertiary: #7E7370;
+    
+    --border-color: #E2DACB;
+    
+    --primary: #5B1A2E; /* Brand Plum */
+    --primary-hover: #451020;
+    --accent: #C8A44D; /* Brand Gold */
+    --accent-hover: #A78434;
+  }
+
+  .dark {
+    --background: #1E1B1A; /* Brand Charcoal */
+    --foreground: #F6F1E7; /* Brand Cream */
+    
+    --bg-primary: #1E1B1A;
+    --bg-secondary: #121010;
+    --bg-tertiary: #2D2827;
+    
+    --text-primary: #F6F1E7;
+    --text-secondary: #D4C9B8;
+    --text-tertiary: #A79986;
+    
+    --border-color: #383130;
+    
+    --primary: #C8A44D; /* Brand Gold in dark mode */
+    --primary-hover: #E1BA5C;
+    --accent: #5B1A2E;
+    --accent-hover: #7A243F;
+  }
+}
+
+@theme {
+  --color-brand-plum: #5B1A2E;
+  --color-brand-gold: #C8A44D;
+  --color-brand-cream: #F6F1E7;
+  --color-brand-charcoal: #1E1B1A;
+  --color-brand-blush: #E9D5C4;
+  
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  
+  --color-border-custom: var(--border-color);
+  
+  --color-primary-custom: var(--primary);
+  --color-primary-custom-hover: var(--primary-hover);
+  --color-accent-custom: var(--accent);
+  --color-accent-custom-hover: var(--accent-hover);
+  
+  --font-serif: var(--font-playfair-display), Georgia, serif;
+  --font-sans: var(--font-inter), "Instrument Sans", sans-serif;
+  
+  --radius-lg: 1.5rem;
+  --radius-md: 1rem;
+  --radius-sm: 0.5rem;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+/* Custom stitch line utility */
+.stitch-divider {
+  height: 2px;
+  background-image: repeating-linear-gradient(90deg, var(--color-brand-gold) 0px, var(--color-brand-gold) 4px, transparent 4px, transparent 8px);
+  width: 100%;
+}
+
+.stitch-border {
+  border: 1px dashed var(--color-brand-gold);
+}
