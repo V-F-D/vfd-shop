@@ -59,18 +59,18 @@ export default function CartDrawer() {
       try {
         // Construct WhatsApp order text
         const orderNumber = "ORD-" + Math.floor(100000 + Math.random() * 900000);
-        let message = `*NEW ORDER ${orderNumber}*\n`;
-        message += `Name: ${name}\n`;
+        let message = `NEW ORDER: ${orderNumber}\n\n`;
+        message += `Customer Name: ${name}\n`;
         message += `Phone: ${cleanPhone}\n`;
-        message += `Address: ${address}\n\n`;
-        message += `*ITEMS:*\n`;
+        message += `Delivery Address: ${address}\n\n`;
+        message += `ITEMS ORDERED:\n`;
         cart.forEach((item) => {
-          message += `- ${item.name} (x${item.quantity}) — KES ${(item.price * item.quantity).toLocaleString()}\n  Link: ${item.image_url}\n`;
+          message += `- ${item.name} (Qty: ${item.quantity}) — KES ${(item.price * item.quantity).toLocaleString()}\n  Category: ${item.category}\n`;
         });
-        message += `\n*Subtotal:* KES ${cartTotal.toLocaleString()}\n`;
-        message += `*Delivery:* ${deliveryFee === 0 ? "FREE" : "KES " + deliveryFee}\n`;
-        message += `*TOTAL:* KES ${grandTotal.toLocaleString()}\n\n`;
-        message += `Hello Victory Fashion, I'd like to confirm this order.`;
+        message += `\nSubtotal: KES ${cartTotal.toLocaleString()}\n`;
+        message += `Delivery Fee: ${deliveryFee === 0 ? "FREE" : "KES " + deliveryFee}\n`;
+        message += `TOTAL AMOUNT: KES ${grandTotal.toLocaleString()}\n\n`;
+        message += `Confirm order via Victory Shop: https://vfd-shop.vercel.app/shop`;
 
         // Save order to Supabase first via a server action or API route (optional, let's keep it robust)
         await fetch("/api/orders/create", {
