@@ -41,9 +41,16 @@ export async function POST(request: Request) {
     }
 
     if (action === "seed") {
-      const { data: existingProducts } = await supabase.from("products").select("id").limit(1);
-      if (existingProducts && existingProducts.length > 0) {
-        return NextResponse.json({ success: false, message: "Database is already seeded with products." });
+      const { force } = body;
+      if (force) {
+        // Delete all products to clear old data
+        const { error: delErr } = await supabase.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+        if (delErr) throw delErr;
+      } else {
+        const { data: existingProducts } = await supabase.from("products").select("id").limit(1);
+        if (existingProducts && existingProducts.length > 0) {
+          return NextResponse.json({ success: false, message: "Database is already seeded with products." });
+        }
       }
 
       const seedData = [
